@@ -161,7 +161,7 @@
 
   <div class="card">
     <h2>送料テーブルの編集</h2>
-    <div class="warn">✅ SpeedPAK / Orange Connex 4種は公式料金ガイド（2026/6/18発効）の<b>アメリカ・本土48州</b>料金、エアパケットは日本郵便<b>第4地帯(米国)</b>料金（追跡あり・2kgまで・容積重量なし）を入力済み。改定時はこの画面で書き換えてください。</div>
+    <div class="warn">✅ 基本運賃はアメリカ本土48州/第4地帯(米国)の公式料金入り。<b>FedEx/DHL/Economyは燃油・割増サーチャージが別途</b>かかります（Orange/エアパケットは込み）。下の各サービスの<b>サーチャージ%</b>を、ご自身の請求書の「燃料割増金＋混雑時割増金 ÷ 運送料金」に合わせると実額に一致します。</div>
     <div class="hint" style="margin-bottom:10px">1行に「重量g,料金円」。例 <code>1000,5300</code> = 1kgまで5300円。安い順でなくてOK、上限重量を超えると「対応外」表示。</div>
     <div id="rateEditors"></div>
     <button class="btn" id="saveBtn">💾 保存する</button>
@@ -177,7 +177,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.0 ・ 料金データ 2026年6月版 ・ 自動更新対応</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.1 ・ 料金データ 2026年6月版 ・ サーチャージ対応</div>
   </div>
 
 </div>
@@ -195,19 +195,19 @@
 const DEFAULTS = {
   settings:{ fxRate:150, fxBuffer:1, feeRate:23 },
   methods:{
-    SpeedPAK_FedEx:{ label:"SpeedPAK FedEx", vol:true, div:5000, sample:false,
+    SpeedPAK_FedEx:{ label:"SpeedPAK FedEx", vol:true, div:5000, sur:50, sample:false,
       r:[[500,2115],[1000,2599],[1500,2840],[2000,3108],[2500,3383],[3000,3540],[3500,3593],[4000,4022],[4500,4451],[5000,4718],[5500,5043],[6000,5366],[6500,5735],[7000,6184],[7500,6683],[8000,6871],[8500,7060],[9000,7249],[9500,8865],[10000,9089],[10500,9346],[11000,9602],[11500,9861],[12000,10116],[12500,11439],[13000,11723],[13500,12006],[14000,12289],[14500,12573],[15000,12857],[15500,13140],[16000,14631],[16500,14940],[17000,15249],[17500,15559],[18000,15867],[18500,16177],[19000,16485],[19500,16794],[20000,17104],[21000,20625],[22000,21657],[23000,22689],[24000,23721],[25000,24754],[26000,25787],[27000,26819],[28000,27852],[29000,28885],[30000,29916]]
     },
-    SpeedPAK_DHL:{ label:"SpeedPAK DHL", vol:true, div:5000, sample:false,
+    SpeedPAK_DHL:{ label:"SpeedPAK DHL", vol:true, div:5000, sur:45, sample:false,
       r:[[500,2727],[1000,3078],[1500,3207],[2000,3365],[2500,3753],[3000,4138],[3500,4616],[4000,5010],[4500,5405],[5000,5800],[5500,6194],[6000,6587],[6500,7035],[7000,7580],[7500,8123],[8000,8667],[8500,9209],[9000,9752],[9500,10296],[10000,10839],[10500,11382],[11000,11925],[11500,12469],[12000,13012],[12500,13555],[13000,14099],[13500,14641],[14000,15185],[14500,15728],[15000,16273],[15500,16816],[16000,17360],[16500,17903],[17000,18446],[17500,18990],[18000,19533],[18500,20078],[19000,20621],[19500,21165],[20000,21708],[21000,22795],[22000,23883],[23000,24970],[24000,26057],[25000,27144],[26000,28232],[27000,29318],[28000,30405],[29000,31482],[30000,32569]]
     },
-    SpeedPAK_Economy:{ label:"SpeedPAK Economy", vol:true, div:8000, sample:false,
+    SpeedPAK_Economy:{ label:"SpeedPAK Economy", vol:true, div:8000, sur:40, sample:false,
       r:[[100,1157],[200,1289],[300,1491],[400,1677],[500,1943],[600,2096],[700,2189],[800,2549],[900,2660],[1000,2848],[1100,2958],[1200,3065],[1300,3174],[1400,3493],[1500,3599],[1600,3711],[1700,3816],[1800,3928],[1900,4768],[2000,4947],[2500,5264],[3000,5973],[3500,6562],[4000,7266],[4500,8615],[5000,11065],[5500,11789],[6000,12576],[6500,13354],[7000,14344],[7500,15144],[8000,15932],[8500,16563],[9000,17119],[9500,18019],[10000,18522],[10500,19122],[11000,19677],[11500,20338],[12000,20936],[12500,21585],[13000,22131],[13500,22685],[14000,23454],[14500,23766],[15000,24509],[15500,25139],[16000,26547],[16500,27138],[17000,27817],[17500,28478],[18000,29144],[18500,29687],[19000,30372],[19500,31062],[20000,32016],[20500,32683],[21000,33410],[21500,34089],[22000,34762],[22500,35463],[23000,36325],[23500,36860],[24000,37421],[24500,38077],[25000,38625]]
     },
-    OrangeConnex:{ label:"Orange Connex", vol:true, div:8000, sample:false,
+    OrangeConnex:{ label:"Orange Connex", vol:true, div:8000, sur:0, sample:false,
       r:[[100,1288],[200,1435],[300,1660],[400,1867],[500,2163],[600,2333],[700,2437],[800,2838],[900,2961],[1000,3171],[1100,3293],[1200,3413],[1300,3534],[1400,3889],[1500,4007],[1600,4132],[1700,4248],[1800,4373],[1900,5309],[2000,5507],[2500,5861],[3000,6650],[3500,7306],[4000,8089],[4500,9592],[5000,12320],[5500,13125],[6000,14002],[6500,14868],[7000,15969],[7500,16861],[8000,17738],[8500,18440],[9000,19060],[9500,20061],[10000,20621],[10500,21290],[11000,21907],[11500,22643],[12000,23309],[12500,24031],[13000,24639],[13500,25257],[14000,26112],[14500,26460],[15000,27287],[15500,27989],[16000,29556],[16500,30214],[17000,30970],[17500,31706],[18000,32447],[18500,33052],[19000,33814],[19500,34583],[20000,35644],[20500,36388],[21000,37197],[21500,37952],[22000,38702],[22500,39482],[23000,40442],[23500,41038],[24000,41662],[24500,42393],[25000,43003]]
     },
-    AirPacket:{ label:"エアパケット(2kgまで)", vol:false, sample:false,
+    AirPacket:{ label:"エアパケット(2kgまで)", vol:false, sur:0, sample:false,
       r:[[100,1200],[200,1410],[300,1620],[400,1830],[500,2040],[600,2250],[700,2460],[800,2670],[900,2880],[1000,3090],[1100,3300],[1200,3510],[1300,3720],[1400,3930],[1500,4140],[1600,4350],[1700,4560],[1800,4770],[1900,4980],[2000,5190]]
     }
   }
@@ -218,7 +218,7 @@ const ORDER = ["AirPacket","SpeedPAK_FedEx","SpeedPAK_DHL","SpeedPAK_Economy","O
 let S = load();
 function load(){
   try{
-    const raw = localStorage.getItem("ebayShip_v3");
+    const raw = localStorage.getItem("ebayShip_v4");
     if(raw){
       const o = JSON.parse(raw);
       const methods = o.methods||structuredClone(DEFAULTS.methods);
@@ -227,7 +227,7 @@ function load(){
   }catch(e){}
   return { settings:{...DEFAULTS.settings}, methods:structuredClone(DEFAULTS.methods) };
 }
-function save(){ localStorage.setItem("ebayShip_v3", JSON.stringify(S)); }
+function save(){ localStorage.setItem("ebayShip_v4", JSON.stringify(S)); }
 
 let chosenMethod = null; // null = 最安
 
@@ -265,8 +265,11 @@ function calc(){
 
   // 各社送料
   const results = ORDER.map(key=>{
+    const m = S.methods[key];
     const r = lookup(key, grams);
-    return { key, label:S.methods[key].label, sample:S.methods[key].sample, ...r };
+    let base = r.price, price = r.price;
+    if(price!=null && m.sur){ price = Math.round(base*(1+m.sur/100)); }
+    return { key, label:m.label, sur:m.sur||0, base, chargeable:r.chargeable, max:r.max, price };
   });
   // 有効なものを安い順
   const valid = results.filter(r=>r.price!=null).sort((a,b)=>a.price-b.price);
@@ -295,6 +298,7 @@ function calc(){
       costHtml = `<span class="c">対応外</span><div class="sub">上限 ${(r.max/1000)}kg超</div>`;
     }else{
       costHtml = `<span class="c">${yen(r.price)}</span>`;
+      if(r.sur>0) costHtml += `<div class="sub">基本${yen(r.base)}＋SC${r.sur}%</div>`;
       if(price){
         const p = profit(price, cost, r.price);
         profHtml = `<div class="p ${p.profit>=0?'pos':'neg'}">利益 ${yen(p.profit)}</div>`;
@@ -353,7 +357,9 @@ function renderSettings(){
     return `<details>
       <summary>${m.label} ${m.vol?'（容積重量あり）':''}${m.sample?' ⚠️サンプル':''}</summary>
       <div class="editbody">
-        <label>料金表（重量g,料金円）</label>
+        <label>燃油・割増サーチャージ %（基本運賃に上乗せ／請求書で調整）</label>
+        <input type="number" inputmode="decimal" data-sur="${key}" value="${m.sur||0}">
+        <label style="margin-top:8px">料金表（重量g,料金円）基本運賃</label>
         <textarea data-m="${key}">${txt}</textarea>
       </div>
     </details>`;
@@ -370,6 +376,9 @@ function collectSettings(){
       return (isNaN(g)||isNaN(p))?null:[g,p];
     }).filter(Boolean);
     S.methods[key].r=rows;
+  });
+  document.querySelectorAll('#rateEditors [data-sur]').forEach(inp=>{
+    S.methods[inp.dataset.sur].sur = parseFloat(inp.value)||0;
   });
 }
 
