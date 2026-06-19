@@ -1,0 +1,4 @@
+# Netlify 設定：ビルド不要・ルートのHTMLをそのまま公開
+[build]
+  publish = "."
+  command = ""
