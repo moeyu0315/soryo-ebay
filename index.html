@@ -140,7 +140,7 @@
       </div>
     </div>
     <div id="shipList"></div>
-    <div class="hint" style="margin-top:10px">送料の左のボタンで利益計算に使う配送方法を選べます。</div>
+    <div class="hint" style="margin-top:10px">★最安の配送方法で自動計算しています（各社の送料・利益は下の一覧で確認できます）。</div>
   </div>
 
 </div>
@@ -178,7 +178,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.4 ・ 料金データ 2026年6月版 ・ Economy燃油13.5%(公式)</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.5 ・ 料金データ 2026年6月版 ・ 最安自動採用</div>
   </div>
 
 </div>
@@ -230,7 +230,6 @@ function load(){
 }
 function save(){ localStorage.setItem("ebayShip_v5", JSON.stringify(S)); }
 
-let chosenMethod = null; // null = 最安
 
 // ===== util =====
 const $ = id=>document.getElementById(id);
@@ -276,9 +275,8 @@ function calc(){
   const valid = results.filter(r=>r.price!=null).sort((a,b)=>a.price-b.price);
   const cheapest = valid[0] || null;
 
-  // 適用配送方法
-  let use = chosenMethod ? results.find(r=>r.key===chosenMethod && r.price!=null) : null;
-  if(!use) use = cheapest;
+  // 適用配送方法＝常に最安を自動採用
+  const use = cheapest;
 
   // メタ
   if(grams){
@@ -292,7 +290,6 @@ function calc(){
   // 送料リスト
   $("shipList").innerHTML = results.map(r=>{
     const isBest = cheapest && r.key===cheapest.key && r.price!=null;
-    const isUse = use && r.key===use.key;
     const na = r.price==null;
     let costHtml, profHtml="";
     if(na){
@@ -305,16 +302,11 @@ function calc(){
         profHtml = `<div class="p ${p.profit>=0?'pos':'neg'}">利益 ${yen(p.profit)}</div>`;
       }
     }
-    return `<label class="ship ${isBest?'best':''} ${na?'na':''}">
-      <input type="radio" name="usem" ${isUse?'checked':''} ${na?'disabled':''} data-key="${r.key}">
+    return `<div class="ship ${isBest?'best':''} ${na?'na':''}">
       <div><div class="name">${r.label}${r.sample?' <span class="sub">(サンプル)</span>':''}</div></div>
       <div class="cost">${costHtml}${profHtml}</div>
-    </label>`;
+    </div>`;
   }).join("");
-
-  document.querySelectorAll('input[name=usem]').forEach(el=>{
-    el.addEventListener('change',()=>{ chosenMethod = el.dataset.key; calc(); });
-  });
 
   // 利益ボックス
   if(use && price){
