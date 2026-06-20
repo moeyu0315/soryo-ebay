@@ -178,7 +178,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.5 ・ 料金データ 2026年6月版 ・ 最安自動採用</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.6 ・ 料金データ 2026年6月版 ・ 燃油%+円表示</div>
   </div>
 
 </div>
@@ -296,7 +296,7 @@ function calc(){
       costHtml = `<span class="c">対応外</span><div class="sub">上限 ${(r.max/1000)}kg超</div>`;
     }else{
       costHtml = `<span class="c">${yen(r.price)}</span>`;
-      if(r.sur>0) costHtml += `<div class="sub">基本${yen(r.base)}＋SC${r.sur}%</div>`;
+      if(r.sur>0) costHtml += `<div class="sub">基本${yen(r.base)}＋燃油${r.sur}%（${yen(r.price-r.base)}）</div>`;
       if(price){
         const p = profit(price, cost, r.price);
         profHtml = `<div class="p ${p.profit>=0?'pos':'neg'}">利益 ${yen(p.profit)}</div>`;
