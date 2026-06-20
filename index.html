@@ -115,9 +115,9 @@
       <div class="field"><label>仕入れ値（円）</label><input id="cost" type="number" inputmode="numeric"></div>
       <div class="field"><label>売値（$）</label><input id="price" type="number" inputmode="decimal"></div>
     </div>
-    <div class="field"><label>実重量（g）梱包込み</label><input id="wg" type="number" inputmode="numeric"></div>
+    <div class="field"><label>商品の重量（g）※2kgまで梱包+200g自動</label><input id="wg" type="number" inputmode="numeric"></div>
     <div class="field">
-      <label>箱サイズ（cm・任意）縦・横・高さ → 容積重量を自動計算</label>
+      <label>商品サイズ（cm・任意）縦・横・高さ ※2kgまで各辺+3cm自動</label>
       <div class="row">
         <div><input id="dl" type="number" inputmode="decimal"></div>
         <div><input id="dw" type="number" inputmode="decimal"></div>
@@ -178,7 +178,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 1.9 ・ 料金データ 2026年6月版 ・ 利益率を大きく</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.0 ・ 料金データ 2026年6月版 ・ 梱包+200g/+3cm自動</div>
   </div>
 
 </div>
@@ -247,21 +247,31 @@ function lookup(method, grams){
   for(const [maxG, price] of table){ if(chargeable<=maxG) return {price, chargeable, max:table[table.length-1][0]}; }
   return {price:null, chargeable, max: table.length?table[table.length-1][0]:0};
 }
+// 梱包バッファ：2000gまでは各辺+3cm・重量+200g
+const PKG = { maxG:2000, addG:200, addCm:3 };
+let DIMS = {l:0,w:0,h:0};
 function volGrams(div){
-  const l=num("dl"),w=num("dw"),h=num("dh");
+  const {l,w,h}=DIMS;
   if(l&&w&&h) return (l*w*h)/(div||5000)*1000;
   return 0;
 }
 
 // ===== 計算 & 描画 =====
 function calc(){
-  const grams = num("wg");
+  const rawG = num("wg");
+  const buffered = rawG>0 && rawG<=PKG.maxG;        // 2000gまで梱包バッファ適用
+  const grams = rawG>0 ? rawG + (buffered?PKG.addG:0) : 0;
+  const rl=num("dl"), rw=num("dw"), rh=num("dh"), addCm = buffered?PKG.addCm:0;
+  DIMS = { l: rl?rl+addCm:0, w: rw?rw+addCm:0, h: rh?rh+addCm:0 };
   const price = num("price");
   const cost = num("cost");
   const v5 = volGrams(5000), v8 = volGrams(8000);
 
-  // 容積重量ヒント（配送方法で除数が違う：FedEx/DHL=5000, Economy/OrangeConnex=8000）
-  $("volHint").textContent = (v5||v8) ? `容積重量 FedEx/DHL≒${Math.round(v5).toLocaleString()}g ・ Economy/Orange≒${Math.round(v8).toLocaleString()}g（実重量と重い方で課金）` : "";
+  // ヒント：梱包バッファと容積重量
+  let vh = "";
+  if(buffered) vh = `梱包込み：重量+${PKG.addG}g`+((DIMS.l&&DIMS.w&&DIMS.h)?`・各辺+${PKG.addCm}cm`:"");
+  if(v5||v8) vh += (vh?" ／ ":"")+`容積重量 FedEx/DHL≒${Math.round(v5).toLocaleString()}g ・ Economy≒${Math.round(v8).toLocaleString()}g（実重量と重い方で課金）`;
+  $("volHint").textContent = vh;
 
   // 各社送料
   const results = ORDER.map(key=>{
@@ -279,8 +289,9 @@ function calc(){
   const use = cheapest;
 
   // メタ
-  if(grams){
-    let meta = `実重量 ${grams.toLocaleString()}g`;
+  if(rawG){
+    let meta = `商品 ${rawG.toLocaleString()}g`;
+    if(buffered) meta += `（+梱包${PKG.addG}g=${grams.toLocaleString()}g）`;
     if(use) meta += ` → 課金重量 ${Math.round(use.chargeable).toLocaleString()}g（${use.label}）`;
     $("applyMeta").textContent = meta;
   }else{
