@@ -212,7 +212,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.0 ・ 料金データ 2026年6月版 ・ 縦横高さラベルを上に</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.1 ・ 料金データ 2026年6月版 ・ エアパケットのサイズ上限反映</div>
   </div>
 
 </div>
@@ -285,6 +285,8 @@ function lookup(method, grams){
 }
 // 梱包バッファ：2000gまで=各辺+3cm/+200g、2000g超=各辺+8cm/+1000g
 const PKG = { thG:2000, light:{addG:200,addCm:3}, heavy:{addG:1000,addCm:8} };
+// サイズ上限（国際エアパケット：最大辺60cm・3辺合計90cm）
+const SIZE_LIMITS = { AirPacket:{ maxLen:60, maxSum:90, label:'最大辺60cm・合計90cm' } };
 let DIMS = {l:0,w:0,h:0};
 function volGrams(div){
   const {l,w,h}=DIMS;
@@ -313,9 +315,15 @@ function calc(){
   const results = ORDER.map(key=>{
     const m = S.methods[key];
     const r = lookup(key, grams);
-    let base = r.price, price = r.price;
+    let base = r.price, price = r.price, naReason = null;
+    // サイズ上限チェック（エアパケット等）
+    const lim = SIZE_LIMITS[key];
+    if(price!=null && lim && DIMS.l && DIMS.w && DIMS.h){
+      const mx = Math.max(DIMS.l,DIMS.w,DIMS.h), sum = DIMS.l+DIMS.w+DIMS.h;
+      if(mx>lim.maxLen || sum>lim.maxSum){ price=null; base=null; naReason='サイズ超過（'+lim.label+'）'; }
+    }
     if(price!=null && m.sur){ price = Math.round(base*(1+m.sur/100)); }
-    return { key, label:m.label, sur:m.sur||0, base, chargeable:r.chargeable, max:r.max, price };
+    return { key, label:m.label, sur:m.sur||0, base, chargeable:r.chargeable, max:r.max, price, naReason };
   });
   // 採用便：2kg以下=エアパケット / 2kg超=SpeedPAK最安（重量で自動）
   const valid = results.filter(r=>r.price!=null).sort((a,b)=>a.price-b.price);
@@ -349,7 +357,8 @@ function calc(){
     const na = r.price==null;
     let costHtml, profHtml="";
     if(na){
-      costHtml = `<span class="c">対応外</span><div class="sub">上限 ${(r.max/1000)}kg超</div>`;
+      const reason = r.naReason ? r.naReason : `上限 ${(r.max/1000)}kg超`;
+      costHtml = `<span class="c">対応外</span><div class="sub">${reason}</div>`;
     }else{
       costHtml = `<span class="c">${yen(r.price)}</span>`;
       costHtml += `<div class="sub">課金 ${Math.round(r.chargeable).toLocaleString()}g・${r.chargeable>grams?'容積':'実'}重量</div>`;
