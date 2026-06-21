@@ -181,7 +181,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.2 ・ 料金データ 2026年6月版 ・ PC中央寄せレイアウト</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.3 ・ 料金データ 2026年6月版 ・ 課金重量(実/容積)表示</div>
   </div>
 
 </div>
@@ -297,7 +297,10 @@ function calc(){
   if(rawG){
     let meta = `商品 ${rawG.toLocaleString()}g`;
     if(tier) meta += `（+梱包${tier.addG}g=${grams.toLocaleString()}g）`;
-    if(use) meta += ` → 課金重量 ${Math.round(use.chargeable).toLocaleString()}g（${use.label}）`;
+    if(use){
+      const basis = use.chargeable>grams ? '容積重量' : '実重量';
+      meta += ` → 課金 ${Math.round(use.chargeable).toLocaleString()}g（${basis}を採用・${use.label}）`;
+    }
     $("applyMeta").textContent = meta;
   }else{
     $("applyMeta").textContent = "重量・売値を入力してください";
@@ -312,6 +315,7 @@ function calc(){
       costHtml = `<span class="c">対応外</span><div class="sub">上限 ${(r.max/1000)}kg超</div>`;
     }else{
       costHtml = `<span class="c">${yen(r.price)}</span>`;
+      costHtml += `<div class="sub">課金 ${Math.round(r.chargeable).toLocaleString()}g・${r.chargeable>grams?'容積':'実'}重量</div>`;
       if(r.sur>0) costHtml += `<div class="sub">基本${yen(r.base)}＋燃油${r.sur}%（${yen(r.price-r.base)}）</div>`;
       if(price){
         const p = profit(price, cost, r.price);
