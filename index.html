@@ -47,6 +47,20 @@
   .field{margin-bottom:12px}
   .field:last-child{margin-bottom:0}
   .hint{font-size:11px;color:var(--sub);margin-top:4px}
+  /* 入力フォーム整形 */
+  label .lnote{font-weight:500;color:var(--sub);font-size:11px;margin-left:4px}
+  .ig{position:relative;display:flex;align-items:center}
+  .ig .u{position:absolute;color:var(--sub);font-weight:700;pointer-events:none}
+  .ig .u:not(.r){left:13px}
+  .ig .u.r{right:14px}
+  .ig input.il{padding-left:28px}
+  .ig input.ir{padding-right:34px}
+  .sizerow{display:flex;align-items:center;gap:7px;margin-bottom:16px}
+  .sizerow .sz{flex:1;position:relative}
+  .sizerow .sz input{text-align:center}
+  .sizerow .sz .cap{position:absolute;left:0;right:0;top:100%;margin-top:3px;text-align:center;font-size:11px;color:var(--sub)}
+  .sizerow .x{color:var(--sub);font-weight:700;font-size:15px}
+  .sizerow .cmlbl{color:var(--sub);font-weight:700;font-size:13px;padding-left:1px}
 
   /* result */
   .result{background:linear-gradient(160deg,#eef6ef,#fbf7ee);border:1px solid var(--line)}
@@ -121,16 +135,22 @@
 
   <div class="card">
     <div class="row">
-      <div class="field"><label>仕入れ値（円）</label><input id="cost" type="number" inputmode="numeric"></div>
-      <div class="field"><label>売値（$）</label><input id="price" type="number" inputmode="decimal"></div>
+      <div class="field"><label>仕入れ値</label>
+        <div class="ig"><span class="u">¥</span><input id="cost" class="il" type="number" inputmode="numeric"></div></div>
+      <div class="field"><label>売値</label>
+        <div class="ig"><span class="u">$</span><input id="price" class="il" type="number" inputmode="decimal"></div></div>
     </div>
-    <div class="field"><label>商品の重量（g）※梱包自動加算 2kgまで+200g / 2kg超+1000g</label><input id="wg" type="number" inputmode="numeric"></div>
+    <div class="field"><label>商品の重量<span class="lnote">梱包自動：2kgまで+200g／超+1000g</span></label>
+      <div class="ig"><input id="wg" class="ir" type="number" inputmode="numeric"><span class="u r">g</span></div></div>
     <div class="field">
-      <label>商品サイズ（cm・任意）縦・横・高さ ※各辺 2kgまで+3cm / 2kg超+8cm 自動</label>
-      <div class="row">
-        <div><input id="dl" type="number" inputmode="decimal"></div>
-        <div><input id="dw" type="number" inputmode="decimal"></div>
-        <div><input id="dh" type="number" inputmode="decimal"></div>
+      <label>商品サイズ（任意）<span class="lnote">各辺：2kgまで+3cm／超+8cm 自動</span></label>
+      <div class="sizerow">
+        <div class="sz"><input id="dl" type="number" inputmode="decimal"><span class="cap">縦</span></div>
+        <span class="x">×</span>
+        <div class="sz"><input id="dw" type="number" inputmode="decimal"><span class="cap">横</span></div>
+        <span class="x">×</span>
+        <div class="sz"><input id="dh" type="number" inputmode="decimal"><span class="cap">高さ</span></div>
+        <span class="cmlbl">cm</span>
       </div>
       <div class="hint" id="volHint"></div>
     </div>
@@ -187,7 +207,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.6 ・ 料金データ 2026年6月版 ・ サイズ/重量を大きく表示</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.7 ・ 料金データ 2026年6月版 ・ 入力フォーム整形</div>
   </div>
 
 </div>
