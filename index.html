@@ -55,6 +55,12 @@
   .bigprofit .u{font-size:27px;font-weight:800}
   .pos{color:var(--green)} .neg{color:var(--red)}
   .metaline{font-size:13px;color:var(--sub);margin-bottom:10px}
+  .dims{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+  .dims .d{flex:1;min-width:90px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .dims .k{font-size:11px;color:var(--sub)}
+  .dims .v{font-size:20px;font-weight:800;line-height:1.15}
+  .dims .v small{font-size:12px;font-weight:600;color:var(--sub)}
+  .dims .note{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px}
   .pill{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;margin:2px 4px 2px 0}
 
   .ship{display:flex;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
@@ -181,7 +187,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.5 ・ 料金データ 2026年6月版 ・ 一覧の文字を拡大</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.6 ・ 料金データ 2026年6月版 ・ サイズ/重量を大きく表示</div>
   </div>
 
 </div>
@@ -296,16 +302,19 @@ function calc(){
     use = sp[0] || valid[0] || null;
   }
 
-  // メタ
+  // サイズ・重量サマリ（ひと目で分かる）
   if(rawG){
-    let meta = `商品 ${rawG.toLocaleString()}g`;
-    if(tier) meta += `（+梱包${tier.addG}g=${grams.toLocaleString()}g）`;
+    const sz = (DIMS.l&&DIMS.w&&DIMS.h) ? `${DIMS.l}×${DIMS.w}×${DIMS.h}<small>cm</small>` : '<small>未入力</small>';
+    let html = `<div class="d"><div class="k">📦 サイズ(梱包後)</div><div class="v">${sz}</div></div>`
+             + `<div class="d"><div class="k">⚖️ 重量(梱包後)</div><div class="v">${grams.toLocaleString()}<small>g</small></div></div>`;
     if(use){
       const basis = use.chargeable>grams ? '容積重量' : '実重量';
-      meta += ` → 課金 ${Math.round(use.chargeable).toLocaleString()}g（${basis}を採用・${use.label}）`;
+      html += `<div class="d"><div class="k">💰 課金重量</div><div class="v">${Math.round(use.chargeable).toLocaleString()}<small>g</small></div><div class="note">${basis}・${use.label}</div></div>`;
     }
-    $("applyMeta").textContent = meta;
+    $("applyMeta").className = "dims";
+    $("applyMeta").innerHTML = html;
   }else{
+    $("applyMeta").className = "metaline";
     $("applyMeta").textContent = "重量・売値を入力してください";
   }
 
