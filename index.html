@@ -24,12 +24,12 @@
     position:sticky; top:0; z-index:20;
     background:linear-gradient(180deg,#1d4d3e,#163d31);
     border-bottom:1px solid rgba(0,0,0,.12);
-    padding:14px 16px; display:flex; align-items:center; gap:8px;
-    color:#fff;
+    padding:14px 16px; color:#fff;
   }
+  header .hd-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:8px}
   header h1{font-size:17px;margin:0;font-weight:700;color:#fff}
   header .rate{margin-left:auto;font-size:12px;color:rgba(255,255,255,.78)}
-  .wrap{padding:14px 14px 0}
+  .wrap{padding:14px 14px 0;max-width:780px;margin:0 auto}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px;box-shadow:0 1px 2px rgba(60,50,20,.05)}
   .card h2{font-size:13px;color:var(--sub);margin:0 0 10px;font-weight:700;letter-spacing:.03em}
   label{display:block;font-size:13px;color:var(--sub);margin:0 0 5px;font-weight:600}
@@ -68,7 +68,8 @@
   .ship.best .name::after{content:" ★ 最安";color:var(--accent);font-size:11px;font-weight:700}
   .ship.na{opacity:.45}
 
-  .tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:1px solid var(--line);z-index:30;box-shadow:0 -1px 4px rgba(60,50,20,.06)}
+  .tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:30;box-shadow:0 -1px 4px rgba(60,50,20,.06)}
+  .tabs-inner{max-width:780px;margin:0 auto;display:flex}
   .tabs button{flex:1;background:transparent;border:0;color:var(--sub);padding:14px 0 18px;font-size:13px;font-weight:600}
   .tabs button.on{color:var(--accent)}
   .tabs button .ic{display:block;font-size:20px;margin-bottom:2px}
@@ -92,8 +93,10 @@
 </head>
 <body>
 <header>
-  <h1>📦 送料・利益計算</h1>
-  <span class="rate" id="hdrRate"></span>
+  <div class="hd-inner">
+    <h1>📦 送料・利益計算</h1>
+    <span class="rate" id="hdrRate"></span>
+  </div>
 </header>
 
 <!-- ===== 計算ページ ===== -->
@@ -178,7 +181,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.1 ・ 料金データ 2026年6月版 ・ 梱包2段階(2kg超+1000g/+8cm)</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.2 ・ 料金データ 2026年6月版 ・ PC中央寄せレイアウト</div>
   </div>
 
 </div>
@@ -187,8 +190,10 @@
 <div class="saved" id="savedMsg">保存しました ✓</div>
 
 <nav class="tabs">
-  <button class="on" data-page="pageCalc"><span class="ic">🧮</span>計算</button>
-  <button data-page="pageSet"><span class="ic">⚙️</span>料金・設定</button>
+  <div class="tabs-inner">
+    <button class="on" data-page="pageCalc"><span class="ic">🧮</span>計算</button>
+    <button data-page="pageSet"><span class="ic">⚙️</span>料金・設定</button>
+  </div>
 </nav>
 
 <script>
