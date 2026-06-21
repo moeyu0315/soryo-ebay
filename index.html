@@ -65,7 +65,7 @@
   .ship .cost .c{font-weight:700;font-size:16px}
   .ship .cost .p{font-size:12px}
   .ship.best{background:rgba(26,122,94,.10);margin:0 -14px;padding-left:14px;padding-right:14px;border-radius:8px}
-  .ship.best .name::after{content:" ★ 最安";color:var(--accent);font-size:11px;font-weight:700}
+  .ship.best .name::after{content:" ★ 採用";color:var(--accent);font-size:11px;font-weight:700}
   .ship.na{opacity:.45}
 
   .tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:30;box-shadow:0 -1px 4px rgba(60,50,20,.06)}
@@ -143,7 +143,7 @@
       </div>
     </div>
     <div id="shipList"></div>
-    <div class="hint" style="margin-top:10px">★最安の配送方法で自動計算しています（各社の送料・利益は下の一覧で確認できます）。</div>
+    <div class="hint" style="margin-top:10px">★採用の便で利益計算（2kg以下＝エアパケット／2kg超＝SpeedPAK最安）。各社の送料・利益は下の一覧で確認できます。</div>
   </div>
 
 </div>
@@ -181,7 +181,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.3 ・ 料金データ 2026年6月版 ・ 課金重量(実/容積)表示</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 2.4 ・ 料金データ 2026年6月版 ・ 採用便=2kg以下エアパケット/超SpeedPAK</div>
   </div>
 
 </div>
@@ -286,12 +286,15 @@ function calc(){
     if(price!=null && m.sur){ price = Math.round(base*(1+m.sur/100)); }
     return { key, label:m.label, sur:m.sur||0, base, chargeable:r.chargeable, max:r.max, price };
   });
-  // 有効なものを安い順
+  // 採用便：2kg以下=エアパケット / 2kg超=SpeedPAK最安（重量で自動）
   const valid = results.filter(r=>r.price!=null).sort((a,b)=>a.price-b.price);
-  const cheapest = valid[0] || null;
-
-  // 適用配送方法＝常に最安を自動採用
-  const use = cheapest;
+  let use;
+  if(grams>0 && grams<=2000){
+    use = results.find(r=>r.key==='AirPacket' && r.price!=null) || valid[0] || null;
+  }else{
+    const sp = results.filter(r=>r.key!=='AirPacket' && r.price!=null).sort((a,b)=>a.price-b.price);
+    use = sp[0] || valid[0] || null;
+  }
 
   // メタ
   if(rawG){
@@ -308,7 +311,7 @@ function calc(){
 
   // 送料リスト
   $("shipList").innerHTML = results.map(r=>{
-    const isBest = cheapest && r.key===cheapest.key && r.price!=null;
+    const isBest = use && r.key===use.key && r.price!=null;
     const na = r.price==null;
     let costHtml, profHtml="";
     if(na){
