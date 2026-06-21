@@ -127,6 +127,10 @@
 <div class="page on" id="pageCalc">
 <div class="wrap">
 
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+    <button id="clearBtn" class="btn ghost" style="width:auto;margin:0;padding:9px 16px;font-size:14px">🗑 入力をクリア</button>
+  </div>
+
   <div class="card" style="display:flex;align-items:center;gap:12px;padding:11px 14px">
     <div>
       <div style="font-size:11px;color:var(--sub)">採用レート（その日の為替 −<span id="bufLbl">1</span>円）</div>
@@ -213,7 +217,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.3 ・ 料金データ 2026年6月版</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.4 ・ 料金データ 2026年6月版 ・ 入力クリアボタン</div>
   </div>
 
 </div>
@@ -444,6 +448,12 @@ function collectSettings(){
 
 // ===== events =====
 ["cost","price","wg","dl","dw","dh"].forEach(id=>$(id).addEventListener("input",calc));
+
+$("clearBtn").addEventListener("click",()=>{
+  ["cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
+  calc();
+  $("cost").focus();
+});
 
 $("saveBtn").addEventListener("click",()=>{
   collectSettings(); save(); calc();
