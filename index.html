@@ -84,6 +84,10 @@
   .dims .v small{font-size:12px;font-weight:600;color:var(--sub)}
   .dims .note{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px;line-height:1.3}
   @media(max-width:520px){ .dims .d{flex:1 1 calc(50% - 4px)} }
+  .surbox label{font-size:12px;margin-bottom:3px}
+  .surbox input{font-size:15px;padding:8px 10px}
+  .surbox .ig input.ir{padding-right:28px}
+  .surbox .u.r{right:11px;font-size:13px}
   .pill{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;margin:2px 4px 2px 0}
 
   .ship{display:flex;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
@@ -169,12 +173,12 @@
       <div class="hint">各辺：2kgまで+3cm／2kg超+8cm 自動</div>
       <div class="hint" id="volHint"></div>
     </div>
-    <div style="border-top:1px solid var(--line);margin:4px -14px 0;padding:12px 14px 0">
-      <div style="font-size:12px;color:var(--sub);font-weight:600;margin-bottom:8px">燃油サーチャージ %（週ごとに更新）</div>
-      <div class="row">
-        <div class="field"><label>SpeedPAK FedEx</label>
+    <div class="surbox" style="border-top:1px solid var(--line);margin:8px -14px 0;padding:10px 14px 0">
+      <div style="font-size:11px;color:var(--sub);font-weight:600;margin-bottom:6px">燃油サーチャージ %（週ごとに更新）</div>
+      <div class="row" style="gap:8px">
+        <div class="field" style="margin:0"><label>FedEx</label>
           <div class="ig"><input id="surFedex" type="number" inputmode="decimal" class="ir"><span class="u r">%</span></div></div>
-        <div class="field"><label>SpeedPAK DHL</label>
+        <div class="field" style="margin:0"><label>DHL</label>
           <div class="ig"><input id="surDhl" type="number" inputmode="decimal" class="ir"><span class="u r">%</span></div></div>
       </div>
     </div>
@@ -231,7 +235,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.7 ・ 料金データ 2026年6月版 ・ 燃油サーチャージを計算画面に</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.8 ・ 料金データ 2026年6月版 ・ 燃油欄をコンパクト化</div>
   </div>
 
 </div>
