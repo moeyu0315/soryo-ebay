@@ -169,6 +169,15 @@
       <div class="hint">各辺：2kgまで+3cm／2kg超+8cm 自動</div>
       <div class="hint" id="volHint"></div>
     </div>
+    <div style="border-top:1px solid var(--line);margin:4px -14px 0;padding:12px 14px 0">
+      <div style="font-size:12px;color:var(--sub);font-weight:600;margin-bottom:8px">燃油サーチャージ %（週ごとに更新）</div>
+      <div class="row">
+        <div class="field"><label>SpeedPAK FedEx</label>
+          <div class="ig"><input id="surFedex" type="number" inputmode="decimal" class="ir"><span class="u r">%</span></div></div>
+        <div class="field"><label>SpeedPAK DHL</label>
+          <div class="ig"><input id="surDhl" type="number" inputmode="decimal" class="ir"><span class="u r">%</span></div></div>
+      </div>
+    </div>
   </div>
 
   <div class="card result">
@@ -222,7 +231,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.6 ・ 料金データ 2026年6月版 ・ キャッシュ無効化(最新反映)</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 3.7 ・ 料金データ 2026年6月版 ・ 燃油サーチャージを計算画面に</div>
   </div>
 
 </div>
@@ -454,6 +463,14 @@ function collectSettings(){
 // ===== events =====
 ["cost","price","wg","dl","dw","dh"].forEach(id=>$(id).addEventListener("input",calc));
 
+// 燃油サーチャージ（計算タブのクイック編集）
+function syncSurInputs(){
+  $("surFedex").value = S.methods.SpeedPAK_FedEx.sur;
+  $("surDhl").value = S.methods.SpeedPAK_DHL.sur;
+}
+$("surFedex").addEventListener("input",()=>{ S.methods.SpeedPAK_FedEx.sur=parseFloat($("surFedex").value)||0; save(); calc(); });
+$("surDhl").addEventListener("input",()=>{ S.methods.SpeedPAK_DHL.sur=parseFloat($("surDhl").value)||0; save(); calc(); });
+
 $("clearBtn").addEventListener("click",()=>{
   ["cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
   calc();
@@ -461,13 +478,13 @@ $("clearBtn").addEventListener("click",()=>{
 });
 
 $("saveBtn").addEventListener("click",()=>{
-  collectSettings(); save(); calc();
+  collectSettings(); save(); calc(); syncSurInputs();
   const m=$("savedMsg"); m.classList.add("on"); setTimeout(()=>m.classList.remove("on"),1400);
 });
 $("resetBtn").addEventListener("click",()=>{
   if(confirm("料金表と手数料を初期値に戻します。よろしいですか？")){
     S={ settings:{...DEFAULTS.settings}, methods:structuredClone(DEFAULTS.methods) };
-    save(); renderSettings(); calc();
+    save(); renderSettings(); calc(); syncSurInputs();
   }
 });
 
@@ -516,6 +533,7 @@ $("refreshBtn").addEventListener("click",fetchRate);
 
 // init
 renderSettings();
+syncSurInputs();
 updateLive();
 calc();
 fetchRate();   // 起動時に自動取得（オンライン時）
