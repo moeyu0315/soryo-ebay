@@ -27,9 +27,12 @@
   .date{font-size:12px;color:var(--sub);margin-bottom:14px}
   /* 判定 */
   .verdict{text-align:center;padding:6px 0 2px}
-  .verdict .lbl{font-size:12px;color:var(--sub)}
-  .verdict .pf{font-size:44px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
-  .verdict .mg{font-size:22px;font-weight:800;margin-left:6px}
+  .verdict .lbl{font-size:12px;color:var(--sub);margin-bottom:10px}
+  .vstats{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+  .vs{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 8px}
+  .vs .vk{font-size:12px;color:var(--sub);font-weight:700;margin-bottom:2px}
+  .vs .pf{font-size:38px;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+  .vs .mg{font-size:38px;font-weight:800;line-height:1.05}
   .pos{color:var(--green)} .neg{color:var(--red)}
   /* 項目グリッド */
   .grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
@@ -74,8 +77,11 @@ if(!p.has("profit")){
     <div class="card">
       ${name?`<div class="item">${esc(name)}</div>`:''}
       <div class="verdict">
-        <div class="lbl">利益（採用便：${esc(g("carrier"))} で発送した場合）</div>
-        <div><span class="pf ${pos?'pos':'neg'}">${yen(profit)}</span><span class="mg ${pos?'pos':'neg'}">${margin.toFixed(1)}%</span></div>
+        <div class="lbl">採用便：${esc(g("carrier"))} で発送した場合</div>
+        <div class="vstats">
+          <div class="vs"><div class="vk">見込み利益</div><div class="pf ${pos?'pos':'neg'}">${yen(profit)}</div></div>
+          <div class="vs"><div class="vk">利益率</div><div class="mg ${pos?'pos':'neg'}">${margin.toFixed(1)}%</div></div>
+        </div>
       </div>
     </div>
 
@@ -87,7 +93,7 @@ if(!p.has("profit")){
         <div class="cell"><div class="k">⚖️ 重量(梱包後)</div><div class="v">${(+g("g")).toLocaleString()}<small>g</small></div></div>
         <div class="cell"><div class="k">📦 サイズ(梱包後)</div><div class="v sm">${esc(size)}</div></div>
         <div class="cell"><div class="k">🚚 最安送料</div><div class="v">${yen(g("ship"))}</div><div class="note">${esc(g("carrier"))}（${esc(g("basis"))}重量）</div></div>
-        <div class="cell"><div class="k">💰 利益 / 利益率</div><div class="v ${pos?'pos':'neg'}">${yen(profit)}</div><div class="note ${pos?'pos':'neg'}">${margin.toFixed(1)}%</div></div>
+        <div class="cell"><div class="k">💰 見込み利益</div><div class="v ${pos?'pos':'neg'}">${yen(profit)}</div><div class="note ${pos?'pos':'neg'}">利益率 ${margin.toFixed(1)}%</div></div>
       </div>
       <div class="flow">計算の流れ<br>
         売上 <b>${yen(g("sales"))}</b> − 手数料 <b>${yen(g("fee"))}</b> − 送料 <b>${yen(g("ship"))}</b> − 仕入 <b>${yen(g("cost"))}</b> ＝ 利益 <b class="${pos?'pos':'neg'}">${yen(profit)}</b>
