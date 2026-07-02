@@ -84,17 +84,6 @@
   .dims .v small{font-size:12px;font-weight:600;color:var(--sub)}
   .dims .note{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px;line-height:1.3}
   @media(max-width:520px){ .dims .d{flex:1 1 calc(50% - 4px)} }
-  /* 一覧（表形式） */
-  .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
-  table.ltbl{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
-  .ltbl th,.ltbl td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
-  .ltbl thead th{font-size:11px;color:var(--sub);font-weight:700;background:#f2ecdc}
-  .ltbl td.name,.ltbl th.name{text-align:left;position:sticky;left:0;background:#fff;max-width:130px;overflow:hidden;text-overflow:ellipsis;font-weight:700}
-  .ltbl thead th.name{background:#f2ecdc}
-  .ltbl .sub{font-size:10px;color:var(--sub);font-weight:500}
-  .ltbl .pos{color:var(--green);font-weight:800} .ltbl .neg{color:var(--red);font-weight:800}
-  .ltbl .del{border:0;background:transparent;color:var(--red);font-size:16px;cursor:pointer;padding:0 2px}
-  .listempty{color:var(--sub);font-size:14px;text-align:center;padding:24px 0;line-height:1.7}
   .surbox label{font-size:12px;margin-bottom:3px}
   .surbox input{font-size:15px;padding:8px 10px}
   .surbox .ig input.ir{padding-right:28px}
@@ -162,7 +151,6 @@
   </div>
 
   <div class="card">
-    <div class="field"><label>商品名・メモ（任意）</label><input id="itemName" type="text"></div>
     <div class="row">
       <div class="field"><label>仕入れ値</label>
         <div class="ig"><span class="u">¥</span><input id="cost" class="il" type="number" inputmode="numeric"></div></div>
@@ -212,7 +200,6 @@
     <div class="hint" style="margin-top:10px">★採用の便で利益計算（2kg以下＝エアパケット／2kg超＝SpeedPAK最安）。各社の送料・利益は下の一覧で確認できます。</div>
   </div>
 
-  <button id="addListBtn" class="btn" style="margin-bottom:16px">📋 この内容を一覧に追加</button>
 
 </div>
 </div>
@@ -249,22 +236,9 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.0 ・ 料金データ 2026年6月版 ・ 一覧を表形式に</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.1 ・ 料金データ 2026年6月版</div>
   </div>
 
-</div>
-</div>
-
-<!-- ===== 一覧ページ ===== -->
-<div class="page" id="pageList">
-<div class="wrap">
-  <a href="list.html" target="_blank" class="btn" style="display:block;text-align:center;text-decoration:none;margin-bottom:12px">📤 提出用ページ（別ページ）を開く</a>
-  <div class="card">
-    <h2 style="display:flex;align-items:center">保存した一覧 <span id="listCount" style="margin-left:6px;color:var(--accent)"></span>
-      <button id="clearListBtn" class="btn ghost" style="width:auto;margin:0 0 0 auto;padding:6px 12px;font-size:12px">全て削除</button>
-    </h2>
-    <div id="listBody"></div>
-  </div>
 </div>
 </div>
 
@@ -273,7 +247,6 @@
 <nav class="tabs">
   <div class="tabs-inner">
     <button class="on" data-page="pageCalc"><span class="ic">🧮</span>計算</button>
-    <button data-page="pageList"><span class="ic">📋</span>一覧</button>
     <button data-page="pageSet"><span class="ic">⚙️</span>料金・設定</button>
   </div>
 </nav>
@@ -317,16 +290,10 @@ function load(){
 }
 function save(){ localStorage.setItem("ebayShip_v5", JSON.stringify(S)); }
 
-// 一覧の状態
-let LAST = null;
-let LIST = (()=>{ try{ return JSON.parse(localStorage.getItem("ebayList_v1"))||[]; }catch(e){ return []; } })();
-function saveList(){ localStorage.setItem("ebayList_v1", JSON.stringify(LIST)); }
-
 
 // ===== util =====
 const $ = id=>document.getElementById(id);
 const yen = n=> "¥"+Math.round(n).toLocaleString("ja-JP");
-const escapeHtml = s=> String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num = id=>{ const v=parseFloat($(id).value); return isNaN(v)?0:v; };
 
 function lookup(method, grams){
@@ -443,15 +410,8 @@ function calc(){
     $("pillSales").textContent = `売上 ${yen(p.salesYen)}`;
     $("pillFee").textContent = `手数料 ${yen(p.feeYen)}`;
     $("pillShip").textContent = `送料 ${yen(use.price)}`;
-    // 一覧保存用スナップショット
-    LAST = { name:$("itemName").value.trim(), cost, price$:price,
-      grams, size:(DIMS.l&&DIMS.w&&DIMS.h)?`${DIMS.l}×${DIMS.w}×${DIMS.h}cm`:'—',
-      useLabel:use.label, ship:use.price, chargeable:Math.round(use.chargeable),
-      basis:(use.chargeable>grams?'容積':'実'), profit:Math.round(p.profit), margin:p.margin,
-      salesYen:Math.round(p.salesYen), feeYen:Math.round(p.feeYen) };
   }else{
     $("profitBox").style.display="none";
-    LAST = null;
   }
 
   $("hdrRate").textContent = `$1 = ¥${(S.settings.fxRate - S.settings.fxBuffer).toFixed(1)}（−${S.settings.fxBuffer}）`;
@@ -489,35 +449,6 @@ function renderSettings(){
   }).join("");
 }
 
-// ===== 一覧描画 =====
-function fmtDate(ts){ try{ return new Date(ts).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return ""; } }
-function renderList(){
-  $("listCount").textContent = LIST.length ? `(${LIST.length}件)` : "";
-  if(!LIST.length){ $("listBody").innerHTML = '<div class="listempty">まだありません。<br>計算画面で「📋 この内容を一覧に追加」を押すと、ここに貯まります。</div>'; return; }
-  const rows = LIST.map((e,i)=>{
-    const pos = e.profit>=0;
-    return `<tr>
-      <td class="name" title="${escapeHtml(e.name||'')}">${e.name?escapeHtml(e.name):'—'}<div class="sub">${e.ts?fmtDate(e.ts):''}</div></td>
-      <td>¥${(e.cost||0).toLocaleString()}</td>
-      <td>$${e.price$}</td>
-      <td>${(e.grams||0).toLocaleString()}g</td>
-      <td>${e.size}</td>
-      <td>${yen(e.ship)}<div class="sub">${e.useLabel}</div></td>
-      <td class="${pos?'pos':'neg'}">${yen(e.profit)}</td>
-      <td class="${pos?'pos':'neg'}">${e.margin.toFixed(1)}%</td>
-      <td><button class="del" data-i="${i}" title="削除">×</button></td>
-    </tr>`;
-  }).join("");
-  $("listBody").innerHTML =
-    `<div class="tblwrap"><table class="ltbl">
-      <thead><tr><th class="name">商品</th><th>仕入</th><th>売値</th><th>重量</th><th>サイズ</th><th>送料(最安)</th><th>利益</th><th>利益率</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
-  $("listBody").querySelectorAll(".del").forEach(b=>b.addEventListener("click",()=>{
-    LIST.splice(+b.dataset.i,1); saveList(); renderList();
-  }));
-}
-
 function collectSettings(){
   S.settings.fxRate=num("fxRate")||150; S.settings.fxBuffer=num("fxBuffer");
   S.settings.feeRate=num("feeRate");
@@ -546,25 +477,14 @@ $("surFedex").addEventListener("input",()=>{ S.methods.SpeedPAK_FedEx.sur=parseF
 $("surDhl").addEventListener("input",()=>{ S.methods.SpeedPAK_DHL.sur=parseFloat($("surDhl").value)||0; save(); calc(); });
 
 $("clearBtn").addEventListener("click",()=>{
-  ["itemName","cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
+  ["cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
   calc();
-  $("itemName").focus();
-});
-
-function toast(msg){ const m=$("savedMsg"); m.textContent=msg; m.classList.add("on"); setTimeout(()=>m.classList.remove("on"),1400); }
-
-$("addListBtn").addEventListener("click",()=>{
-  if(!LAST){ alert("先に売値・重量を入力してください"); return; }
-  LIST.unshift({...LAST, ts:Date.now()}); saveList(); renderList();
-  toast("一覧に追加しました ✓");
-});
-$("clearListBtn").addEventListener("click",()=>{
-  if(LIST.length && confirm("一覧を全て削除しますか？")){ LIST=[]; saveList(); renderList(); }
+  $("cost").focus();
 });
 
 $("saveBtn").addEventListener("click",()=>{
   collectSettings(); save(); calc(); syncSurInputs();
-  toast("保存しました ✓");
+  const m=$("savedMsg"); m.classList.add("on"); setTimeout(()=>m.classList.remove("on"),1400);
 });
 $("resetBtn").addEventListener("click",()=>{
   if(confirm("料金表と手数料を初期値に戻します。よろしいですか？")){
@@ -579,7 +499,6 @@ document.querySelectorAll(".tabs button").forEach(b=>{
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
     $(b.dataset.page).classList.add("on");
     if(b.dataset.page==="pageCalc") calc();
-    if(b.dataset.page==="pageList") renderList();
   });
 });
 
@@ -620,7 +539,6 @@ $("refreshBtn").addEventListener("click",fetchRate);
 // init
 renderSettings();
 syncSurInputs();
-renderList();
 updateLive();
 calc();
 fetchRate();   // 起動時に自動取得（オンライン時）
