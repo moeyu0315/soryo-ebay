@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1d4d3e">
+<title>仕入れ判断添削</title>
+<style>
+  :root{
+    --bg:#ece4d0; --card:#fbf7ee; --line:#e3dcc8;
+    --txt:#26302a; --sub:#6f6b59; --accent:#1a7a5e;
+    --green:#15803d; --red:#dc2626;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:16px;line-height:1.5}
+  header{background:linear-gradient(180deg,#1d4d3e,#163d31);color:#fff;padding:16px}
+  header .hd{max-width:760px;margin:0 auto}
+  header h1{font-size:18px;margin:0;font-weight:700}
+  header .sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:2px}
+  .wrap{max-width:760px;margin:0 auto;padding:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(60,50,20,.05)}
+  .item{font-size:20px;font-weight:800;margin-bottom:2px}
+  .date{font-size:12px;color:var(--sub);margin-bottom:14px}
+  /* 判定 */
+  .verdict{text-align:center;padding:6px 0 2px}
+  .verdict .lbl{font-size:12px;color:var(--sub)}
+  .verdict .pf{font-size:44px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+  .verdict .mg{font-size:22px;font-weight:800;margin-left:6px}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  /* 項目グリッド */
+  .grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  .cell{flex:1 1 calc(33.33% - 7px);min-width:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .cell .k{font-size:11px;color:var(--sub)}
+  .cell .v{font-size:21px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cell .v.sm{font-size:17px}
+  .cell .v small{font-size:12px;font-weight:600;color:var(--sub)}
+  .cell .note{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px}
+  @media(max-width:520px){ .cell{flex:1 1 calc(50% - 5px)} }
+  /* 計算の流れ */
+  .flow{font-size:13px;color:var(--sub);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:14px;line-height:1.7}
+  .flow b{color:var(--txt)}
+  .back{display:inline-block;margin:4px 0 24px;color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
+  h2{font-size:12px;color:var(--sub);margin:0 0 8px;font-weight:700}
+  .empty{color:var(--sub);text-align:center;padding:30px 0}
+</style>
+</head>
+<body>
+<header><div class="hd">
+  <h1>📋 仕入れ判断添削</h1>
+  <div class="sub" id="genDate"></div>
+</div></header>
+<div class="wrap" id="wrap"></div>
+<script>
+const p = new URLSearchParams(location.search);
+const g = k => p.get(k) || '';
+const yen = n => "¥"+Math.round(+n||0).toLocaleString("ja-JP");
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.getElementById("genDate").textContent =
+  new Date().toLocaleString("ja-JP",{year:"numeric",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+
+if(!p.has("profit")){
+  document.getElementById("wrap").innerHTML =
+    '<div class="card"><div class="empty">データがありません。<br>計算ツールで入力後に「仕入れ判断添削ページを開く」から開いてください。</div>'
+   +'<a class="back" href="index.html">← 計算ツールに戻る</a></div>';
+}else{
+  const profit=+g("profit"), margin=+g("margin"), pos=profit>=0;
+  const name=g("name"), size=g("size")||'—';
+  document.getElementById("wrap").innerHTML = `
+    <div class="card">
+      ${name?`<div class="item">${esc(name)}</div>`:''}
+      <div class="verdict">
+        <div class="lbl">利益（採用便：${esc(g("carrier"))} で発送した場合）</div>
+        <div><span class="pf ${pos?'pos':'neg'}">${yen(profit)}</span><span class="mg ${pos?'pos':'neg'}">${margin.toFixed(1)}%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>入力・計算結果</h2>
+      <div class="grid">
+        <div class="cell"><div class="k">💴 仕入れ値</div><div class="v">${yen(g("cost"))}</div></div>
+        <div class="cell"><div class="k">🏷️ 売値</div><div class="v">$${esc(g("price"))}</div></div>
+        <div class="cell"><div class="k">⚖️ 重量(梱包後)</div><div class="v">${(+g("g")).toLocaleString()}<small>g</small></div></div>
+        <div class="cell"><div class="k">📦 サイズ(梱包後)</div><div class="v sm">${esc(size)}</div></div>
+        <div class="cell"><div class="k">🚚 最安送料</div><div class="v">${yen(g("ship"))}</div><div class="note">${esc(g("carrier"))}（${esc(g("basis"))}重量）</div></div>
+        <div class="cell"><div class="k">💰 利益 / 利益率</div><div class="v ${pos?'pos':'neg'}">${yen(profit)}</div><div class="note ${pos?'pos':'neg'}">${margin.toFixed(1)}%</div></div>
+      </div>
+      <div class="flow">計算の流れ<br>
+        売上 <b>${yen(g("sales"))}</b> − 手数料 <b>${yen(g("fee"))}</b> − 送料 <b>${yen(g("ship"))}</b> − 仕入 <b>${yen(g("cost"))}</b> ＝ 利益 <b class="${pos?'pos':'neg'}">${yen(profit)}</b>
+      </div>
+    </div>
+
+    <a class="back" href="index.html">← 計算ツールに戻る</a>`;
+}
+</script>
+</body>
+</html>

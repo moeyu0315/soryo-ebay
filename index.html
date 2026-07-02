@@ -151,6 +151,7 @@
   </div>
 
   <div class="card">
+    <div class="field"><label>商品名・メモ（任意）</label><input id="itemName" type="text"></div>
     <div class="row">
       <div class="field"><label>仕入れ値</label>
         <div class="ig"><span class="u">¥</span><input id="cost" class="il" type="number" inputmode="numeric"></div></div>
@@ -200,6 +201,7 @@
     <div class="hint" style="margin-top:10px">★採用の便で利益計算（2kg以下＝エアパケット／2kg超＝SpeedPAK最安）。各社の送料・利益は下の一覧で確認できます。</div>
   </div>
 
+  <button id="checkBtn" class="btn" style="margin-bottom:16px">📋 仕入れ判断添削ページを開く</button>
 
 </div>
 </div>
@@ -236,7 +238,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.1 ・ 料金データ 2026年6月版</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.2 ・ 料金データ 2026年6月版 ・ 仕入れ判断添削ページ</div>
   </div>
 
 </div>
@@ -289,6 +291,8 @@ function load(){
   return { settings:{...DEFAULTS.settings}, methods:structuredClone(DEFAULTS.methods) };
 }
 function save(){ localStorage.setItem("ebayShip_v5", JSON.stringify(S)); }
+
+let CUR = null; // 添削ページ用の現在値スナップショット
 
 
 // ===== util =====
@@ -410,8 +414,14 @@ function calc(){
     $("pillSales").textContent = `売上 ${yen(p.salesYen)}`;
     $("pillFee").textContent = `手数料 ${yen(p.feeYen)}`;
     $("pillShip").textContent = `送料 ${yen(use.price)}`;
+    CUR = { name:$("itemName").value.trim(), cost:cost, price:price, g:grams,
+      size:(DIMS.l&&DIMS.w&&DIMS.h)?`${DIMS.l}×${DIMS.w}×${DIMS.h}cm`:'',
+      ship:use.price, carrier:use.label, basis:(use.chargeable>grams?'容積':'実'),
+      profit:Math.round(p.profit), margin:p.margin.toFixed(1),
+      sales:Math.round(p.salesYen), fee:Math.round(p.feeYen) };
   }else{
     $("profitBox").style.display="none";
+    CUR = null;
   }
 
   $("hdrRate").textContent = `$1 = ¥${(S.settings.fxRate - S.settings.fxBuffer).toFixed(1)}（−${S.settings.fxBuffer}）`;
@@ -477,9 +487,15 @@ $("surFedex").addEventListener("input",()=>{ S.methods.SpeedPAK_FedEx.sur=parseF
 $("surDhl").addEventListener("input",()=>{ S.methods.SpeedPAK_DHL.sur=parseFloat($("surDhl").value)||0; save(); calc(); });
 
 $("clearBtn").addEventListener("click",()=>{
-  ["cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
+  ["itemName","cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
   calc();
-  $("cost").focus();
+  $("itemName").focus();
+});
+
+$("checkBtn").addEventListener("click",()=>{
+  if(!CUR){ alert("先に売値・重量を入力してください"); return; }
+  const q = new URLSearchParams(CUR).toString();
+  window.open("check.html?"+q, "_blank");
 });
 
 $("saveBtn").addEventListener("click",()=>{
