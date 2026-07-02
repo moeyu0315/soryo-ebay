@@ -39,8 +39,7 @@
   .grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
   .cell{flex:1 1 calc(33.33% - 7px);min-width:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center}
   .cell .k{font-size:13px;color:var(--sub);font-weight:600;margin-bottom:2px}
-  .cell .v{font-size:26px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cell .v.sm{font-size:21px}
+  .cell .v{font-size:24px;font-weight:800;line-height:1.2;overflow-wrap:anywhere}
   .cell .v small{font-size:14px;font-weight:600;color:var(--sub)}
   .cell .note{font-size:13px;color:var(--accent);font-weight:700;margin-top:2px}
   @media(max-width:520px){ .cell{flex:1 1 calc(50% - 5px)} }
@@ -92,7 +91,7 @@ if(!p.has("profit")){
         <div class="cell"><div class="k">💴 仕入れ値</div><div class="v">${yen(g("cost"))}</div></div>
         <div class="cell"><div class="k">🏷️ 売値</div><div class="v">$${esc(g("price"))}</div></div>
         <div class="cell"><div class="k">⚖️ 重量(梱包後)</div><div class="v">${(+g("g")).toLocaleString()}<small>g</small></div></div>
-        <div class="cell"><div class="k">📦 サイズ(梱包後)</div><div class="v sm">${esc(size)}</div></div>
+        <div class="cell"><div class="k">📦 サイズ(梱包後)</div><div class="v">${esc(size)}</div></div>
         <div class="cell"><div class="k">🚚 最安送料</div><div class="v">${yen(g("ship"))}</div><div class="note">${esc(g("carrier"))}（${esc(g("basis"))}重量）</div></div>
         <div class="cell"><div class="k">💰 見込み利益</div><div class="v ${pos?'pos':'neg'}">${yen(profit)}</div><div class="note ${pos?'pos':'neg'}">利益率 ${margin.toFixed(1)}%</div></div>
       </div>
