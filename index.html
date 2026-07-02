@@ -238,7 +238,7 @@
       ・入力済みは「アメリカ本土48州」料金です。アラスカ/ハワイ/領土やEU(英・独)向けは料金が異なります（必要なら入れ替え可）。<br>
       ・利益率＝利益÷売上（円換算）。
     </div>
-    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.5 ・ 料金データ 2026年6月版 ・ 添削ページの文字を拡大</div>
+    <div class="hint" style="margin-top:10px;opacity:.7">ver 4.6 ・ 料金データ 2026年6月版 ・ 入力を自動保存(戻ってもリセットされない)</div>
   </div>
 
 </div>
@@ -293,6 +293,11 @@ function load(){
 function save(){ localStorage.setItem("ebayShip_v5", JSON.stringify(S)); }
 
 let CUR = null; // 添削ページ用の現在値スナップショット
+
+// 入力値の自動保存／復元（添削ページから戻ってもリセットされない）
+const INPUT_IDS = ["itemName","cost","price","wg","dl","dw","dh"];
+function saveInputs(){ const o={}; INPUT_IDS.forEach(id=>o[id]=$(id).value); localStorage.setItem("ebayInputs_v1", JSON.stringify(o)); }
+function loadInputs(){ try{ const o=JSON.parse(localStorage.getItem("ebayInputs_v1")); if(o) INPUT_IDS.forEach(id=>{ if(o[id]!=null && $(id)) $(id).value=o[id]; }); }catch(e){} }
 
 
 // ===== util =====
@@ -476,7 +481,7 @@ function collectSettings(){
 }
 
 // ===== events =====
-["cost","price","wg","dl","dw","dh"].forEach(id=>$(id).addEventListener("input",calc));
+INPUT_IDS.forEach(id=>$(id).addEventListener("input",()=>{ calc(); saveInputs(); }));
 
 // 燃油サーチャージ（計算タブのクイック編集）
 function syncSurInputs(){
@@ -487,8 +492,8 @@ $("surFedex").addEventListener("input",()=>{ S.methods.SpeedPAK_FedEx.sur=parseF
 $("surDhl").addEventListener("input",()=>{ S.methods.SpeedPAK_DHL.sur=parseFloat($("surDhl").value)||0; save(); calc(); });
 
 $("clearBtn").addEventListener("click",()=>{
-  ["itemName","cost","price","wg","dl","dw","dh"].forEach(id=>{ $(id).value=""; });
-  calc();
+  INPUT_IDS.forEach(id=>{ $(id).value=""; });
+  calc(); saveInputs();
   $("itemName").focus();
 });
 
@@ -555,6 +560,7 @@ $("refreshBtn").addEventListener("click",fetchRate);
 // init
 renderSettings();
 syncSurInputs();
+loadInputs();
 updateLive();
 calc();
 fetchRate();   // 起動時に自動取得（オンライン時）
