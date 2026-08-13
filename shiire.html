@@ -100,6 +100,7 @@
     cursor: pointer;
   }
   #openAll:active { transform: translateY(1px); opacity: .9; }
+  #openAll.queue-mode { background: var(--closed); color: #fff; }
 
   .options-row {
     display: flex;
@@ -228,7 +229,7 @@
         </select>
       </label>
     </div>
-    <p class="hint" id="iosHint">📱 iPhoneで一括オープンを使うには:<b>設定 → アプリ → Safari → 「ポップアップブロック」をオフ</b>にしてください。オフにしない場合も、各サイトの「開く」ボタンは1つずつ確実に開けます。</p>
+    <p class="hint" id="iosHint">📱 スマホではポップアップ制限のため、一度に開けなかったサイトは<b>「▶ 次を開く」ボタンに変わり、タップするたびに1サイトずつ順番に開きます</b>。すべて同時に開きたい場合(iPhoneのChrome):<b>右下「…」→ 設定 → コンテンツの設定 → ポップアップのブロック → オフ</b></p>
   </div>
 
   <div class="section-label">海外相場(eBay)</div>
@@ -456,17 +457,47 @@
     });
   });
 
+  // スマホのポップアップ制限でブロックされたサイトは、キューに積んで
+  // 「▶ 次を開く」ボタンのタップごとに1件ずつ開く(タップ=ユーザー操作なので確実に開ける)
+  var queue = [];
+  var openAllBtn = document.getElementById("openAll");
+
+  function updateOpenAllBtn() {
+    if (queue.length) {
+      openAllBtn.textContent = "▶ 次を開く:" + queue[0].name + "(残り" + queue.length + ")";
+      openAllBtn.classList.add("queue-mode");
+    } else {
+      openAllBtn.textContent = "✅ 一括で開く";
+      openAllBtn.classList.remove("queue-mode");
+    }
+  }
+
+  function resetQueue() {
+    if (queue.length) { queue = []; updateOpenAllBtn(); }
+  }
+
   function openAll() {
+    if (queue.length) { // キュー消化モード:1タップ1サイト
+      var item = queue.shift();
+      window.open(item.url, "_blank");
+      updateOpenAllBtn();
+      return;
+    }
     var kw = getKeyword();
     if (!kw) return;
     pushHistory(kw);
-    // iOSはタップ操作の中で同期的に開かないとブロックされるため、遅延なしで開く
-    SITES.filter(function (s) { return s._checkbox.checked; }).forEach(function (site) {
-      window.open(site.url(kw), "_blank");
+    var targets = SITES.filter(function (s) { return s._checkbox.checked; });
+    targets.forEach(function (site) {
+      var u = site.url(kw);
+      var w = window.open(u, "_blank");
+      if (!w) queue.push({ name: site.name, url: u }); // ブロックされた分をキューへ
     });
+    updateOpenAllBtn();
   }
 
-  document.getElementById("openAll").addEventListener("click", openAll);
+  openAllBtn.addEventListener("click", openAll);
+  document.getElementById("keyword").addEventListener("input", resetQueue);
+  SITES.forEach(function (s) { s._checkbox.addEventListener("change", resetQueue); });
   document.getElementById("keyword").addEventListener("keydown", function (e) {
     if (e.key === "Enter") { e.target.blur(); openAll(); }
   });
