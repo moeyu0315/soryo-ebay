@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>開いています…</title>
 <style>
-  body { font-family: sans-serif; background: #f2f4f8; color: #5c6b84; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-size: 14px; }
+  body { font-family: sans-serif; background: #f2f4f8; color: #5c6b84; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-size: 15px; gap: 18px; padding: 20px; text-align: center; }
+  #reopen { display: none; font-size: 16px; font-weight: bold; padding: 14px 28px; background: #2458d6; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
   @media (prefers-color-scheme: dark) { body { background: #0f141d; color: #92a0b5; } }
 </style>
 </head>
 <body>
 <p id="msg">開いています…</p>
+<button id="reopen">もう一度開く ↗</button>
 <script>
 // 仕入れ判断検索ツール用の中継ページ。
 // リンクを直接タップするとiOSのユニバーサルリンクでアプリが起動してしまうため、
@@ -24,15 +26,39 @@
     "fril.jp",
     "netmall.hardoff.co.jp"
   ];
-  try {
-    var raw = decodeURIComponent(location.hash.slice(1));
-    var u = new URL(raw);
-    if (u.protocol === "https:" && ALLOWED.indexOf(u.hostname) !== -1) {
-      location.replace(u.href);
+
+  function targetUrl() {
+    try {
+      var u = new URL(decodeURIComponent(location.hash.slice(1)));
+      if (u.protocol === "https:" && ALLOWED.indexOf(u.hostname) !== -1) return u.href;
+    } catch (e) {}
+    return null;
+  }
+
+  // pageshowはbfcache(戻る操作)からの復帰時にも発火する
+  window.addEventListener("pageshow", function (e) {
+    var t = targetUrl();
+    if (!t) {
+      document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
       return;
     }
-  } catch (e) {}
-  document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
+    var visited = false;
+    try { visited = sessionStorage.getItem("go_done") === "1"; } catch (err) {}
+    if (e.persisted || visited) {
+      // 検索サイトから「戻る」で帰ってきた:このタブの役目は終わっている
+      try { window.close(); } catch (err) {}
+      // 閉じられなかった場合の表示
+      document.getElementById("msg").textContent = "✅ このタブは閉じて大丈夫です";
+      var btn = document.getElementById("reopen");
+      btn.style.display = "block";
+      btn.addEventListener("click", function () {
+        location.replace(t); // JS遷移なのでアプリには飛ばない
+      });
+      return;
+    }
+    try { sessionStorage.setItem("go_done", "1"); } catch (err) {}
+    location.replace(t);
+  });
 })();
 </script>
 </body>
