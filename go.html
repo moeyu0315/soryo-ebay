@@ -35,15 +35,21 @@
   }
 
   // pageshowはbfcacheからの復帰時にも発火するので、どのケースでも必ず転送される。
-  // すぐに転送するとタップ操作の続きと見なされてユニバーサルリンク(アプリ)が起動するため、
-  // 少し待ってから転送してタップ操作と切り離す。
+  // JSのlocation変更はタップ操作の効力(transient activation)を引き継ぎ、
+  // ユニバーサルリンクでアプリが起動してしまう。メタリフレッシュによる転送は
+  // ユーザー操作と無関係な転送として処理されるため、アプリが起動しない。
   window.addEventListener("pageshow", function () {
     var t = targetUrl();
-    if (t) {
-      setTimeout(function () { location.replace(t); }, 100);
-    } else {
+    if (!t) {
       document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
+      return;
     }
+    var m = document.createElement("meta");
+    m.httpEquiv = "refresh";
+    m.content = "0;url=" + t;
+    document.head.appendChild(m);
+    // 保険:メタリフレッシュが効かない環境ではタップの効力が切れた頃にJSで転送
+    setTimeout(function () { location.replace(t); }, 6000);
   });
 })();
 </script>
