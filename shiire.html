@@ -87,21 +87,6 @@
     transition: border-color .15s;
   }
   #keyword:focus { border-color: var(--accent); }
-  #openAll {
-    width: 100%;
-    font-size: 16px;
-    font-weight: 700;
-    min-height: 50px;
-    padding: 13px 20px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-  #openAll:active { transform: translateY(1px); opacity: .9; }
-  #openAll.queue-mode { background: var(--closed); color: #fff; }
-
   .options-row {
     display: flex;
     gap: 8px;
@@ -148,11 +133,6 @@
     gap: 10px;
     box-shadow: var(--shadow);
   }
-  .site-row input[type="checkbox"] {
-    width: 22px; height: 22px;
-    accent-color: var(--accent);
-    flex-shrink: 0;
-  }
   .site-info { flex: 1; min-width: 0; }
   .site-name {
     font-weight: 700;
@@ -192,10 +172,7 @@
 
   footer { margin-top: 22px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
 
-  /* タブレット・PCでは検索窓とボタンを横並びに */
   @media (min-width: 560px) {
-    .search-row { flex-direction: row; }
-    #openAll { width: auto; white-space: nowrap; }
     a.open-btn:hover { background: var(--accent); color: var(--accent-ink); }
   }
 </style>
@@ -206,9 +183,8 @@
 
   <div class="search-card">
     <div class="search-row">
-      <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="search">
+      <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="done">
       <datalist id="history"></datalist>
-      <button id="openAll">✅ 一括で開く</button>
     </div>
     <div class="options-row">
       <label>Terapeak期間
@@ -238,7 +214,6 @@
   <div class="site-list" id="siteListJp"></div>
 
   <footer>
-    チェックを外したサイトは一括オープンの対象外(設定は自動保存)。<br>
     Terapeakの表示にはeBayセラーアカウントでのログインが必要です。<br>
     日付は開いた時点から自動計算されるので、URLが古くなる心配はありません。<br>
     共有メニューから<b>「ホーム画面に追加」</b>するとアプリのように使えます。
@@ -359,7 +334,6 @@
     }
   ];
 
-  var STORAGE_CHECKS = "sourcing_tool_checks";
   var STORAGE_HISTORY = "sourcing_tool_history";
   var STORAGE_TP = "sourcing_tool_terapeak";
 
@@ -373,21 +347,10 @@
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 
-  var checks = loadJSON(STORAGE_CHECKS, {});
-
   // サイト行を描画
   SITES.forEach(function (site) {
     var row = document.createElement("div");
     row.className = "site-row";
-
-    var cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = checks[site.id] !== false; // 既定はON
-    cb.title = "一括オープンに含める";
-    cb.addEventListener("change", function () {
-      checks[site.id] = cb.checked;
-      saveJSON(STORAGE_CHECKS, checks);
-    });
 
     var info = document.createElement("div");
     info.className = "site-info";
@@ -421,10 +384,8 @@
       if (!openInBrowser(u)) location.href = u; // 万一ブロックされたら同じタブで開く
     });
 
-    row.appendChild(cb);
     row.appendChild(info);
     row.appendChild(link);
-    site._checkbox = cb;
 
     document.getElementById(site.group === "ebay" ? "siteListEbay" : "siteListJp").appendChild(row);
   });
@@ -469,48 +430,9 @@
     });
   });
 
-  // スマホのポップアップ制限でブロックされたサイトは、キューに積んで
-  // 「▶ 次を開く」ボタンのタップごとに1件ずつ開く(タップ=ユーザー操作なので確実に開ける)
-  var queue = [];
-  var openAllBtn = document.getElementById("openAll");
-
-  function updateOpenAllBtn() {
-    if (queue.length) {
-      openAllBtn.textContent = "▶ 次を開く:" + queue[0].name + "(残り" + queue.length + ")";
-      openAllBtn.classList.add("queue-mode");
-    } else {
-      openAllBtn.textContent = "✅ 一括で開く";
-      openAllBtn.classList.remove("queue-mode");
-    }
-  }
-
-  function resetQueue() {
-    if (queue.length) { queue = []; updateOpenAllBtn(); }
-  }
-
-  function openAll() {
-    if (queue.length) { // キュー消化モード:1タップ1サイト
-      var item = queue.shift();
-      openInBrowser(item.url);
-      updateOpenAllBtn();
-      return;
-    }
-    var kw = getKeyword();
-    if (!kw) return;
-    pushHistory(kw);
-    var targets = SITES.filter(function (s) { return s._checkbox.checked; });
-    targets.forEach(function (site) {
-      var u = site.url(kw);
-      if (!openInBrowser(u)) queue.push({ name: site.name, url: u }); // ブロックされた分をキューへ
-    });
-    updateOpenAllBtn();
-  }
-
-  openAllBtn.addEventListener("click", openAll);
-  document.getElementById("keyword").addEventListener("input", resetQueue);
-  SITES.forEach(function (s) { s._checkbox.addEventListener("change", resetQueue); });
+  // Enterでキーボードを閉じる
   document.getElementById("keyword").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { e.target.blur(); openAll(); }
+    if (e.key === "Enter") e.target.blur();
   });
 })();
 </script>
