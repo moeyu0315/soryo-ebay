@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>開いています…</title>
+<style>
+  body { font-family: sans-serif; background: #f2f4f8; color: #5c6b84; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-size: 14px; }
+  @media (prefers-color-scheme: dark) { body { background: #0f141d; color: #92a0b5; } }
+</style>
+</head>
+<body>
+<p id="msg">開いています…</p>
+<script>
+// 仕入れ判断検索ツール用の中継ページ。
+// リンクを直接タップするとiOSのユニバーサルリンクでアプリが起動してしまうため、
+// 一旦このページを開き、JSで転送することでブラウザ内で開けるようにする。
+(function () {
+  var ALLOWED = [
+    "www.ebay.com",
+    "jp.mercari.com",
+    "auctions.yahoo.co.jp",
+    "paypayfleamarket.yahoo.co.jp",
+    "fril.jp",
+    "netmall.hardoff.co.jp"
+  ];
+  try {
+    var raw = decodeURIComponent(location.hash.slice(1));
+    var u = new URL(raw);
+    if (u.protocol === "https:" && ALLOWED.indexOf(u.hostname) !== -1) {
+      location.replace(u.href);
+      return;
+    }
+  } catch (e) {}
+  document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
+})();
+</script>
+</body>
+</html>

@@ -181,14 +181,13 @@
   var DAY_MS = 24 * 60 * 60 * 1000;
 
   // URLを直接タップで開くとiOSのユニバーサルリンクでアプリ(eBay/メルカリ等)に飛ばされるため、
-  // 先に空白タブを開いてからJSでURLを読み込む(この方式ならブラウザ内で開く)
+  // 同サイト内の中継ページ(go.html)を開き、そこからJSで転送する(この方式ならブラウザ内で開く)
+  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
+  function goUrl(url) {
+    return GO_URL + "#" + encodeURIComponent(url);
+  }
   function openInBrowser(url) {
-    var w = window.open("", "_blank");
-    if (w) {
-      try { w.opener = null; } catch (e) {}
-      w.location.href = url;
-    }
-    return w; // ポップアップブロック時はnull
+    return window.open(goUrl(url), "_blank"); // ポップアップブロック時はnull
   }
 
   // 各サイトの定義。url(kw) がキーワードから検索URLを生成する
@@ -334,7 +333,7 @@
       if (!kw) return;
       pushHistory(kw);
       var u = site.url(kw); // クリック時点のキーワード・設定・日付でURLを確定
-      if (!openInBrowser(u)) location.href = u; // 万一ブロックされたら同じタブで開く
+      if (!openInBrowser(u)) location.href = goUrl(u); // 万一ブロックされたら同じタブで開く
     });
 
     row.appendChild(info);
