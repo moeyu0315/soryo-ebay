@@ -546,9 +546,9 @@
       .catch(function (e) {
         var msg = String(e.message || e);
         if (msg === "RATE") showError(card, site, kw, "アクセス集中 — 1分ほど待って再取得");
-        else if (msg === "LOADING") showError(card, site, kw, "読み込み中に切れました — 再取得で成功しやすいです");
+        else if (msg === "LOADING") showError(card, site, kw, "一覧を取得できず — 右の「サイトで開く」で確認");
         else if (/abort/i.test(msg)) showError(card, site, kw, "時間切れ — 再取得してください");
-        else showError(card, site, kw, "取得できませんでした");
+        else showError(card, site, kw, "取得できませんでした — 右の「サイトで開く」で確認");
       });
   }
 
