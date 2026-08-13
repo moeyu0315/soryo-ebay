@@ -252,6 +252,17 @@
 
   var DAY_MS = 24 * 60 * 60 * 1000;
 
+  // URLを直接タップで開くとiOSのユニバーサルリンクでアプリ(eBay/メルカリ等)に飛ばされるため、
+  // 先に空白タブを開いてからJSでURLを読み込む(この方式ならブラウザ内で開く)
+  function openInBrowser(url) {
+    var w = window.open("", "_blank");
+    if (w) {
+      try { w.opener = null; } catch (e) {}
+      w.location.href = url;
+    }
+    return w; // ポップアップブロック時はnull
+  }
+
   // 各サイトの定義。url(kw) がキーワードから検索URLを生成する
   var SITES = [
     {
@@ -403,10 +414,12 @@
     link.rel = "noopener noreferrer";
     link.href = "#";
     link.addEventListener("click", function (e) {
+      e.preventDefault(); // href直接遷移はアプリに飛ぶためJSで開く
       var kw = getKeyword();
-      if (!kw) { e.preventDefault(); return; }
-      link.href = site.url(kw); // クリック時点のキーワード・設定・日付でURLを確定
+      if (!kw) return;
       pushHistory(kw);
+      var u = site.url(kw); // クリック時点のキーワード・設定・日付でURLを確定
+      if (!openInBrowser(u)) location.href = u; // 万一ブロックされたら同じタブで開く
     });
 
     row.appendChild(cb);
@@ -479,7 +492,7 @@
   function openAll() {
     if (queue.length) { // キュー消化モード:1タップ1サイト
       var item = queue.shift();
-      window.open(item.url, "_blank");
+      openInBrowser(item.url);
       updateOpenAllBtn();
       return;
     }
@@ -489,8 +502,7 @@
     var targets = SITES.filter(function (s) { return s._checkbox.checked; });
     targets.forEach(function (site) {
       var u = site.url(kw);
-      var w = window.open(u, "_blank");
-      if (!w) queue.push({ name: site.name, url: u }); // ブロックされた分をキューへ
+      if (!openInBrowser(u)) queue.push({ name: site.name, url: u }); // ブロックされた分をキューへ
     });
     updateOpenAllBtn();
   }
