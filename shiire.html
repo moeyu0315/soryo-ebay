@@ -87,33 +87,6 @@
     transition: border-color .15s;
   }
   #keyword:focus { border-color: var(--accent); }
-  .options-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border);
-  }
-  .options-row label {
-    flex: 1;
-    font-size: 11px;
-    color: var(--sub);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .options-row select {
-    font-size: 14px;
-    min-height: 42px;
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--input-bg);
-    color: var(--ink);
-    width: 100%;
-  }
-  .hint { font-size: 11.5px; color: var(--sub); margin-top: 10px; line-height: 1.7; }
-  .hint b { color: var(--ink); }
 
   .section-label {
     font-size: 11px;
@@ -186,25 +159,6 @@
       <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="done">
       <datalist id="history"></datalist>
     </div>
-    <div class="options-row">
-      <label>Terapeak期間
-        <select id="tpDays">
-          <option value="90">過去90日</option>
-          <option value="180" selected>過去180日</option>
-          <option value="365">過去365日</option>
-          <option value="730">過去2年</option>
-        </select>
-      </label>
-      <label>Terapeakソート
-        <select id="tpSort">
-          <option value="avgsalesprice" selected>販売価格 安い順</option>
-          <option value="-avgsalesprice">販売価格 高い順</option>
-          <option value="-totalsoldcount">売れた数 多い順</option>
-          <option value="-lastsolddate">最近売れた順</option>
-          <option value="-totalsalesamount">売上合計 多い順</option>
-        </select>
-      </label>
-    </div>
   </div>
 
   <div class="section-label">海外相場(eBay)</div>
@@ -254,10 +208,10 @@
       group: "ebay",
       name: "eBay Research(Terapeak)",
       badge: { text: "SOLD", color: "var(--ebay-red)" },
-      desc: "販売履歴 ※要セラーログイン/期間・ソートは上の設定に従う",
+      desc: "販売履歴 過去180日・安い順 ※要セラーログイン",
       url: function (kw) {
-        var days = parseInt(document.getElementById("tpDays").value, 10);
-        var sort = document.getElementById("tpSort").value;
+        var days = 180;
+        var sort = "avgsalesprice"; // 平均販売価格の安い順
         var end = Date.now();
         var start = end - days * DAY_MS;
         return "https://www.ebay.com/sh/research?marketplace=EBAY-US" +
@@ -335,7 +289,6 @@
   ];
 
   var STORAGE_HISTORY = "sourcing_tool_history";
-  var STORAGE_TP = "sourcing_tool_terapeak";
 
   function loadJSON(key, fallback) {
     try {
@@ -416,19 +369,6 @@
     renderHistory();
   }
   renderHistory();
-
-  // Terapeak設定の保存・復元
-  var tp = loadJSON(STORAGE_TP, {});
-  if (tp.days) document.getElementById("tpDays").value = tp.days;
-  if (tp.sort) document.getElementById("tpSort").value = tp.sort;
-  ["tpDays", "tpSort"].forEach(function (id) {
-    document.getElementById(id).addEventListener("change", function () {
-      saveJSON(STORAGE_TP, {
-        days: document.getElementById("tpDays").value,
-        sort: document.getElementById("tpSort").value
-      });
-    });
-  });
 
   // Enterでキーボードを閉じる
   document.getElementById("keyword").addEventListener("keydown", function (e) {
