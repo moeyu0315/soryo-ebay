@@ -34,11 +34,13 @@
     return null;
   }
 
-  // pageshowはbfcacheからの復帰時にも発火するので、どのケースでも必ず転送される
+  // pageshowはbfcacheからの復帰時にも発火するので、どのケースでも必ず転送される。
+  // すぐに転送するとタップ操作の続きと見なされてユニバーサルリンク(アプリ)が起動するため、
+  // 少し待ってから転送してタップ操作と切り離す。
   window.addEventListener("pageshow", function () {
     var t = targetUrl();
     if (t) {
-      location.replace(t);
+      setTimeout(function () { location.replace(t); }, 100);
     } else {
       document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
     }
