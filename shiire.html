@@ -75,10 +75,26 @@
     margin-bottom: 14px;
   }
   .search-row { display: flex; flex-direction: column; gap: 10px; }
+  .kw-wrap { position: relative; }
+  #clearKw {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--sub);
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #clearKw:active { background: var(--border); }
   #keyword {
     width: 100%;
     font-size: 16px; /* 16px未満だとiOSで自動ズームされる */
-    padding: 14px;
+    padding: 14px 46px 14px 14px;
     border: 2px solid var(--border);
     border-radius: 10px;
     outline: none;
@@ -156,7 +172,10 @@
 
   <div class="search-card">
     <div class="search-row">
-      <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="done">
+      <div class="kw-wrap">
+        <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="done">
+        <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
+      </div>
       <datalist id="history"></datalist>
     </div>
   </div>
@@ -181,13 +200,11 @@
   var DAY_MS = 24 * 60 * 60 * 1000;
 
   // URLを直接タップで開くとiOSのユニバーサルリンクでアプリ(eBay/メルカリ等)に飛ばされるため、
-  // 同サイト内の中継ページ(go.html)を開き、そこからJSで転送する(この方式ならブラウザ内で開く)
+  // 同サイト内の中継ページ(go.html)を経由してJSで転送する(この方式ならブラウザ内で開く)。
+  // 中継ページは履歴に残らないので、検索ページから「戻る」を押すとこのツールに直接帰ってくる。
   var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
   function goUrl(url) {
     return GO_URL + "#" + encodeURIComponent(url);
-  }
-  function openInBrowser(url) {
-    return window.open(goUrl(url), "_blank"); // ポップアップブロック時はnull
   }
 
   // 各サイトの定義。url(kw) がキーワードから検索URLを生成する
@@ -320,20 +337,17 @@
     info.appendChild(nameEl);
     info.appendChild(descEl);
 
-    // iOSでも確実に開けるよう、個別オープンはリンク方式にする
+    // 同じタブで開き、「戻る」でこの画面に帰ってくるハブ方式
     var link = document.createElement("a");
     link.className = "open-btn";
-    link.textContent = "開く ↗";
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
+    link.textContent = "開く";
     link.href = "#";
     link.addEventListener("click", function (e) {
-      e.preventDefault(); // href直接遷移はアプリに飛ぶためJSで開く
       var kw = getKeyword();
-      if (!kw) return;
+      if (!kw) { e.preventDefault(); return; }
       pushHistory(kw);
-      var u = site.url(kw); // クリック時点のキーワード・設定・日付でURLを確定
-      if (!openInBrowser(u)) location.href = goUrl(u); // 万一ブロックされたら同じタブで開く
+      // クリック時点のキーワード・日付でURLを確定し、通常のリンク遷移で同じタブで開く
+      link.href = goUrl(site.url(kw));
     });
 
     row.appendChild(info);
@@ -369,8 +383,22 @@
   }
   renderHistory();
 
+  // 検索ページから戻ってきても型番が消えないよう、入力内容を自動保存・復元する
+  var STORAGE_LAST = "sourcing_tool_last_kw";
+  var kwInput = document.getElementById("keyword");
+  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
+  kwInput.addEventListener("input", function () {
+    saveJSON(STORAGE_LAST, kwInput.value);
+  });
+
+  document.getElementById("clearKw").addEventListener("click", function () {
+    kwInput.value = "";
+    saveJSON(STORAGE_LAST, "");
+    kwInput.focus();
+  });
+
   // Enterでキーボードを閉じる
-  document.getElementById("keyword").addEventListener("keydown", function (e) {
+  kwInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") e.target.blur();
   });
 })();
