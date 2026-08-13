@@ -18,14 +18,10 @@
     --accent-ink: #ffffff;
     --border: #dfe5ee;
     --input-bg: #ffffff;
+    --row: #f7f9fc;
+    --ok: #0e7a4d;
+    --err: #b3261e;
     --shadow: 0 1px 3px rgba(20, 34, 62, .07);
-    --ebay-red: #d93a3f;
-    --ebay-blue: #0064d2;
-    --mercari: #e64d8c;
-    --yahoo: #e60023;
-    --closed: #b45309;
-    --rakuma: #bf0000;
-    --hardoff: #005bac;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -37,6 +33,9 @@
       --accent-ink: #0d1526;
       --border: #2a3547;
       --input-bg: #121a26;
+      --row: #131b28;
+      --ok: #4cc38a;
+      --err: #ff8a80;
       --shadow: 0 1px 3px rgba(0, 0, 0, .35);
     }
   }
@@ -49,6 +48,9 @@
     --accent-ink: #0d1526;
     --border: #2a3547;
     --input-bg: #121a26;
+    --row: #131b28;
+    --ok: #4cc38a;
+    --err: #ff8a80;
     --shadow: 0 1px 3px rgba(0, 0, 0, .35);
   }
 
@@ -58,31 +60,29 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
-    padding: 16px 14px 32px;
+    padding: 16px 12px 40px;
     -webkit-text-size-adjust: 100%;
   }
   .container { max-width: 560px; margin: 0 auto; }
 
-  h1 { font-size: 19px; letter-spacing: .01em; }
-  .subtitle { color: var(--sub); font-size: 12.5px; margin: 4px 0 14px; line-height: 1.6; }
+  h1 { font-size: 18px; letter-spacing: .01em; }
+  .subtitle { color: var(--sub); font-size: 12px; margin: 4px 0 12px; line-height: 1.6; }
 
   .search-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 14px;
+    padding: 12px;
     box-shadow: var(--shadow);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-  .search-row { display: flex; flex-direction: column; gap: 10px; }
-  .kw-wrap { position: relative; }
+  .kw-wrap { position: relative; margin-bottom: 10px; }
   #clearKw {
     position: absolute;
     right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    width: 38px;
-    height: 38px;
+    width: 38px; height: 38px;
     border: none;
     border-radius: 50%;
     background: transparent;
@@ -94,102 +94,153 @@
   #keyword {
     width: 100%;
     font-size: 16px; /* 16px未満だとiOSで自動ズームされる */
-    padding: 14px 46px 14px 14px;
+    padding: 13px 46px 13px 13px;
     border: 2px solid var(--border);
     border-radius: 10px;
     outline: none;
     background: var(--input-bg);
     color: var(--ink);
-    transition: border-color .15s;
   }
   #keyword:focus { border-color: var(--accent); }
+  #searchBtn {
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+    min-height: 50px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  #searchBtn:active { transform: translateY(1px); opacity: .9; }
+  #searchBtn:disabled { opacity: .55; }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--sub);
-    margin: 16px 2px 8px;
-    letter-spacing: .08em;
-  }
-  .site-list { display: flex; flex-direction: column; gap: 8px; }
-  .site-row {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: var(--shadow);
-  }
-  .site-info { flex: 1; min-width: 0; }
-  .site-name {
-    font-weight: 700;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .site-desc { font-size: 11.5px; color: var(--sub); margin-top: 2px; line-height: 1.5; }
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 99px;
-    color: #fff;
-    flex-shrink: 0;
-  }
-  a.open-btn {
-    font-size: 14px;
-    font-weight: 700;
-    min-height: 44px;
-    min-width: 64px;
+  .ebay-row { display: flex; gap: 8px; margin-top: 10px; }
+  .ebay-row a {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
+    min-height: 44px;
+    font-size: 13px;
+    font-weight: 700;
     color: var(--accent);
     border: 1.5px solid var(--accent);
     border-radius: 10px;
     text-decoration: none;
-    flex-shrink: 0;
-    padding: 0 12px;
+    padding: 4px 6px;
+    text-align: center;
   }
-  a.open-btn:active { background: var(--accent); color: var(--accent-ink); }
+  .ebay-row a:active { background: var(--accent); color: var(--accent-ink); }
 
-  footer { margin-top: 22px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
-
-  @media (min-width: 560px) {
-    a.open-btn:hover { background: var(--accent); color: var(--accent-ink); }
+  .r-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    overflow: hidden;
   }
+  .r-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .r-name { font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .r-stat { flex: 1; font-size: 12px; color: var(--sub); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .r-stat .min { color: var(--ok); font-weight: 700; }
+  .r-stat.err { color: var(--err); }
+  .r-open {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .r-open:active { background: var(--accent); color: var(--accent-ink); }
+  .r-items { list-style: none; border-top: 1px solid var(--border); }
+  .r-items li a {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 9px 12px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .r-items li:nth-child(odd) a { background: var(--row); }
+  .r-items li a:active { background: var(--border); }
+  .r-items .t {
+    flex: 1;
+    font-size: 12.5px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .r-items .p {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .r-items .p small { font-weight: 400; font-size: 10px; color: var(--sub); }
+  .r-foot { padding: 8px 12px; border-top: 1px solid var(--border); }
+  .r-retry {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    background: none;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  .spin {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: sp 1s linear infinite;
+    vertical-align: -2px;
+    margin-right: 4px;
+  }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+
+  footer { margin-top: 20px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
 </style>
 
 <div class="container">
   <h1>🔍 仕入れ判断 一括検索ツール</h1>
-  <p class="subtitle">型番を入力 → eBay・国内フリマの相場をまとめて検索</p>
+  <p class="subtitle">型番を入力して検索 → 各サイトの相場がここにまとめて表示されます</p>
 
   <div class="search-card">
-    <div class="search-row">
-      <div class="kw-wrap">
-        <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="done">
-        <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
-      </div>
+    <div class="kw-wrap">
+      <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="search">
+      <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
       <datalist id="history"></datalist>
+    </div>
+    <button id="searchBtn">🔍 一括検索</button>
+    <div class="ebay-row">
+      <a id="ebayLink" href="#">eBay 出品中 ↗</a>
+      <a id="terapeakLink" href="#">Terapeak 販売履歴 ↗</a>
     </div>
   </div>
 
-  <div class="section-label">海外相場(eBay)</div>
-  <div class="site-list" id="siteListEbay"></div>
-
-  <div class="section-label">国内相場・仕入れ先</div>
-  <div class="site-list" id="siteListJp"></div>
+  <div id="results"></div>
 
   <footer>
-    Terapeakの表示にはeBayセラーアカウントでのログインが必要です。<br>
-    日付は開いた時点から自動計算されるので、URLが古くなる心配はありません。<br>
-    共有メニューから<b>「ホーム画面に追加」</b>するとアプリのように使えます。
+    国内6サイトの結果はツール内に表示されます(価格の安い順・上位のみ)。<br>
+    eBay/Terapeakはbot対策のため取得不可 → ボタンでサイトを開いてください。<br>
+    行をタップすると商品ページが開きます(戻るでこの画面に復帰)。
   </footer>
 </div>
 
@@ -197,175 +248,161 @@
 (function () {
   "use strict";
 
+  var JINA = "https://r.jina.ai/";
+  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
+  var MAX_ITEMS = 8;
+  var CACHE_TTL = 10 * 60 * 1000;
   var DAY_MS = 24 * 60 * 60 * 1000;
 
-  // URLを直接タップで開くとiOSのユニバーサルリンクでアプリ(eBay/メルカリ等)に飛ばされるため、
-  // 同サイト内の中継ページ(go.html)を経由してJSで転送する(この方式ならブラウザ内で開く)。
-  // 中継ページは履歴に残らないので、検索ページから「戻る」を押すとこのツールに直接帰ってくる。
-  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
-  function goUrl(url) {
-    return GO_URL + "#" + encodeURIComponent(url);
+  // 外部サイトを直接開くとiOSのユニバーサルリンクでアプリに飛ぶため、中継ページ経由で開く
+  function relay(url) { return GO_URL + "#" + encodeURIComponent(url); }
+
+  function parseNextData(text) {
+    var m = text.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+    return m ? JSON.parse(m[1]) : null;
+  }
+  function toDoc(text) { return new DOMParser().parseFromString(text, "text/html"); }
+  function num(s) {
+    var m = String(s == null ? "" : s).replace(/,/g, "").match(/[0-9]+(?:\.[0-9]+)?/);
+    return m ? parseFloat(m[0]) : null;
   }
 
-  // 各サイトの定義。url(kw) がキーワードから検索URLを生成する
+  // メルカリはJinaの取得サーバー(海外IP)経由だと米ドル表示になるため、円換算用レートを取得
+  var usdJpy = 155;
+  try {
+    var cachedRate = JSON.parse(localStorage.getItem("usd_jpy") || "null");
+    if (cachedRate && Date.now() - cachedRate.ts < 12 * 3600 * 1000) usdJpy = cachedRate.rate;
+    else fetch("https://api.frankfurter.app/latest?from=USD&to=JPY").then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.rates && d.rates.JPY) {
+        usdJpy = d.rates.JPY;
+        localStorage.setItem("usd_jpy", JSON.stringify({ ts: Date.now(), rate: usdJpy }));
+      }
+    }).catch(function () {});
+  } catch (e) {}
+
+  // 価格文字列 → {jpy:数値, label:表示}
+  function readPrice(s) {
+    if (!s) return null;
+    var v = num(s);
+    if (v == null) return null;
+    if (/[$]/.test(s)) return { jpy: Math.round(v * usdJpy), label: "約¥" + Math.round(v * usdJpy).toLocaleString(), sub: "$" + v };
+    return { jpy: v, label: "¥" + v.toLocaleString(), sub: null };
+  }
+
   var SITES = [
     {
-      id: "ebay_active",
-      group: "ebay",
-      name: "eBay 出品中",
-      badge: { text: "eBay", color: "var(--ebay-blue)" },
-      desc: "現在出品中・送料込み最安値順(米国)",
-      url: function (kw) {
-        return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15";
+      id: "mercari", name: "メルカリ",
+      search: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; },
+      parse: function (text) {
+        var doc = toDoc(text);
+        var items = [];
+        doc.querySelectorAll('[data-testid="item-cell"]').forEach(function (cell) {
+          var a = cell.querySelector('a[href*="/item/"]');
+          if (!a) return;
+          var href = a.getAttribute("href");
+          var url = href.indexOf("http") === 0 ? href : "https://jp.mercari.com" + href;
+          var img = cell.querySelector("img");
+          var priceM = (cell.textContent || "").match(/[$¥￥][0-9.,]+|[0-9,]+円/);
+          var title = (img && img.alt) || (a.getAttribute("aria-label") || "").replace(/[$¥￥][0-9.,]+|[0-9,]+円/g, "") || cell.textContent;
+          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url });
+        });
+        return items;
       }
     },
     {
-      id: "ebay_terapeak",
-      group: "ebay",
-      name: "eBay Research(Terapeak)",
-      badge: { text: "SOLD", color: "var(--ebay-red)" },
-      desc: "販売履歴 過去180日・安い順 ※要セラーログイン",
-      url: function (kw) {
-        var days = 180;
-        var sort = "avgsalesprice"; // 平均販売価格の安い順
-        var end = Date.now();
-        var start = end - days * DAY_MS;
-        return "https://www.ebay.com/sh/research?marketplace=EBAY-US" +
-          "&keywords=" + encodeURIComponent(kw) +
-          "&dayRange=" + days +
-          "&endDate=" + end +
-          "&startDate=" + start +
-          "&categoryId=0&offset=0&limit=50" +
-          "&sorting=" + encodeURIComponent(sort) +
-          "&tabName=SOLD&tz=" + encodeURIComponent("Asia/Tokyo");
+      id: "yahoo_active", name: "ヤフオク 出品中",
+      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
+      parse: function (text) {
+        var items = [];
+        toDoc(text).querySelectorAll(".Product").forEach(function (p) {
+          var a = p.querySelector("a.Product__titleLink");
+          var pr = p.querySelector(".Product__priceValue");
+          if (!a || !pr) return;
+          items.push({ title: a.getAttribute("title") || a.textContent.trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href") });
+        });
+        return items;
       }
     },
     {
-      id: "mercari",
-      group: "jp",
-      name: "メルカリ",
-      badge: { text: "販売中", color: "var(--mercari)" },
-      desc: "販売中・価格の安い順",
-      url: function (kw) {
-        return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc";
+      id: "yahoo_closed", name: "ヤフオク 落札相場",
+      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
+      parse: function (text) {
+        var d = parseNextData(text);
+        if (!d) return [];
+        var p = d.props || {};
+        var st = (p.pageProps && p.pageProps.initialState) || p.initialState || {};
+        var listing = st.search && st.search.items && st.search.items.listing;
+        return (listing ? listing.items || [] : []).map(function (it) {
+          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId };
+        });
       }
     },
     {
-      id: "yahoo_auction_active",
-      group: "jp",
-      name: "ヤフオク 出品中",
-      badge: { text: "出品中", color: "var(--yahoo)" },
-      desc: "現在価格の安い順",
-      url: function (kw) {
-        var q = encodeURIComponent(kw);
-        return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a";
+      id: "paypay", name: "Yahoo!フリマ",
+      search: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; },
+      parse: function (text) {
+        var d = parseNextData(text);
+        if (!d) return [];
+        var items = ((((d.props.initialState || {}).searchState || {}).search || {}).result || {}).items || [];
+        return items.filter(function (i) { return i.itemStatus !== "SOLD"; }).map(function (it) {
+          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://paypayfleamarket.yahoo.co.jp/item/" + it.id };
+        });
       }
     },
     {
-      id: "yahoo_auction_closed",
-      group: "jp",
-      name: "ヤフオク 落札相場",
-      badge: { text: "落札済", color: "var(--closed)" },
-      desc: "過去の落札価格・安い順",
-      url: function (kw) {
-        var q = encodeURIComponent(kw);
-        return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a";
+      id: "fril", name: "楽天ラクマ",
+      search: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; },
+      parse: function (text) {
+        var items = [];
+        toDoc(text).querySelectorAll(".item-box").forEach(function (b) {
+          var a = b.querySelector("a.link_search_title") || b.querySelector(".item-box__item-name a");
+          var pr = b.querySelector(".item-box__item-price");
+          if (!a || !pr) return;
+          items.push({ title: (a.getAttribute("title") || a.textContent).trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href") });
+        });
+        return items;
       }
     },
     {
-      id: "yahoo_flea",
-      group: "jp",
-      name: "Yahoo!フリマ",
-      badge: { text: "販売中", color: "var(--yahoo)" },
-      desc: "旧PayPayフリマ・販売中・価格の安い順",
-      url: function (kw) {
-        return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open";
-      }
-    },
-    {
-      id: "rakuma",
-      group: "jp",
-      name: "楽天ラクマ",
-      badge: { text: "販売中", color: "var(--rakuma)" },
-      desc: "販売中・価格の安い順",
-      url: function (kw) {
-        return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc";
-      }
-    },
-    {
-      id: "hardoff",
-      group: "jp",
-      name: "ハードオフ ネットモール",
-      badge: { text: "通販", color: "var(--hardoff)" },
-      desc: "ハードオフ公式通販(オフモール)",
-      url: function (kw) {
-        return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw);
+      id: "hardoff", name: "ハードオフ",
+      sortClient: true, // ネットモールは価格順ソートのURLがないため取得後に並べ替える
+      search: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); },
+      parse: function (text) {
+        var seen = {};
+        var items = [];
+        toDoc(text).querySelectorAll('a[href*="/product/"]').forEach(function (a) {
+          var href = a.getAttribute("href");
+          if (seen[href]) return;
+          seen[href] = 1;
+          var names = [];
+          a.querySelectorAll('[class*="item-name"], .item-code').forEach(function (e) { names.push(e.textContent.trim()); });
+          var pr = a.querySelector(".item-price-en");
+          if (!names.length || !pr) return;
+          var url = href.indexOf("http") === 0 ? href : "https://netmall.hardoff.co.jp" + href;
+          items.push({ title: names.join(" "), priceRaw: pr.textContent.trim(), url: url });
+        });
+        return items;
       }
     }
   ];
 
+  // ---- 検索窓まわり ----
   var STORAGE_HISTORY = "sourcing_tool_history";
-
+  var STORAGE_LAST = "sourcing_tool_last_kw";
   function loadJSON(key, fallback) {
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (e) { return fallback; }
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
   }
-  function saveJSON(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-  }
+  function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
-  // サイト行を描画
-  SITES.forEach(function (site) {
-    var row = document.createElement("div");
-    row.className = "site-row";
-
-    var info = document.createElement("div");
-    info.className = "site-info";
-    var nameEl = document.createElement("div");
-    nameEl.className = "site-name";
-    nameEl.textContent = site.name;
-    var badge = document.createElement("span");
-    badge.className = "badge";
-    badge.textContent = site.badge.text;
-    badge.style.background = site.badge.color;
-    nameEl.appendChild(badge);
-    var descEl = document.createElement("div");
-    descEl.className = "site-desc";
-    descEl.textContent = site.desc;
-    info.appendChild(nameEl);
-    info.appendChild(descEl);
-
-    // 同じタブで開き、「戻る」でこの画面に帰ってくるハブ方式
-    var link = document.createElement("a");
-    link.className = "open-btn";
-    link.textContent = "開く";
-    link.href = "#";
-    link.addEventListener("click", function (e) {
-      var kw = getKeyword();
-      if (!kw) { e.preventDefault(); return; }
-      pushHistory(kw);
-      // クリック時点のキーワード・日付でURLを確定し、通常のリンク遷移で同じタブで開く
-      link.href = goUrl(site.url(kw));
-    });
-
-    row.appendChild(info);
-    row.appendChild(link);
-
-    document.getElementById(site.group === "ebay" ? "siteListEbay" : "siteListJp").appendChild(row);
+  var kwInput = document.getElementById("keyword");
+  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
+  kwInput.addEventListener("input", function () { saveJSON(STORAGE_LAST, kwInput.value); });
+  document.getElementById("clearKw").addEventListener("click", function () {
+    kwInput.value = "";
+    saveJSON(STORAGE_LAST, "");
+    kwInput.focus();
   });
 
-  function getKeyword() {
-    var kw = document.getElementById("keyword").value.trim();
-    if (!kw) {
-      document.getElementById("keyword").focus();
-      return null;
-    }
-    return kw;
-  }
-
-  // 検索履歴(直近15件)を datalist に反映
   function renderHistory() {
     var list = document.getElementById("history");
     list.innerHTML = "";
@@ -383,23 +420,162 @@
   }
   renderHistory();
 
-  // 検索ページから戻ってきても型番が消えないよう、入力内容を自動保存・復元する
-  var STORAGE_LAST = "sourcing_tool_last_kw";
-  var kwInput = document.getElementById("keyword");
-  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
-  kwInput.addEventListener("input", function () {
-    saveJSON(STORAGE_LAST, kwInput.value);
+  // ---- eBay/Terapeakリンク(取得不可のためサイトを開く) ----
+  function ebayUrl(kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
+  function terapeakUrl(kw) {
+    var end = Date.now(), start = end - 180 * DAY_MS;
+    return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
+      "&dayRange=180&endDate=" + end + "&startDate=" + start +
+      "&categoryId=0&offset=0&limit=50&sorting=avgsalesprice&tabName=SOLD&tz=" + encodeURIComponent("Asia/Tokyo");
+  }
+  [["ebayLink", ebayUrl], ["terapeakLink", terapeakUrl]].forEach(function (pair) {
+    var el = document.getElementById(pair[0]);
+    el.addEventListener("click", function (e) {
+      var kw = kwInput.value.trim();
+      if (!kw) { e.preventDefault(); kwInput.focus(); return; }
+      pushHistory(kw);
+      el.href = relay(pair[1](kw));
+    });
   });
 
-  document.getElementById("clearKw").addEventListener("click", function () {
-    kwInput.value = "";
-    saveJSON(STORAGE_LAST, "");
-    kwInput.focus();
-  });
+  // ---- 検索実行 ----
+  var running = 0;
 
-  // Enterでキーボードを閉じる
+  function jinaFetch(url, timeoutMs) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 35000);
+    return fetch(JINA + url, { signal: ctrl.signal, headers: { "X-Return-Format": "html" } })
+      .then(function (r) {
+        if (r.status === 429) throw new Error("RATE");
+        if (!r.ok) throw new Error("HTTP" + r.status);
+        return r.text();
+      })
+      .finally(function () { clearTimeout(timer); });
+  }
+
+  function cacheGet(site, kw) {
+    var c = null;
+    try { c = JSON.parse(sessionStorage.getItem("jr:" + site.id + ":" + kw) || "null"); } catch (e) {}
+    return c && Date.now() - c.ts < CACHE_TTL ? c.items : null;
+  }
+  function cacheSet(site, kw, items) {
+    try { sessionStorage.setItem("jr:" + site.id + ":" + kw, JSON.stringify({ ts: Date.now(), items: items })); } catch (e) {}
+  }
+
+  function makeCard(site) {
+    var card = document.createElement("section");
+    card.className = "r-card";
+    card.innerHTML =
+      '<div class="r-head">' +
+      '<span class="r-name"></span>' +
+      '<span class="r-stat"><span class="spin"></span>取得中…</span>' +
+      '<a class="r-open">サイトで開く</a>' +
+      "</div>";
+    card.querySelector(".r-name").textContent = site.name;
+    return card;
+  }
+
+  function showItems(card, site, items) {
+    var stat = card.querySelector(".r-stat");
+    stat.classList.remove("err");
+    var old = card.querySelector(".r-items"); if (old) old.remove();
+    var foot = card.querySelector(".r-foot"); if (foot) foot.remove();
+    var parsed = items.map(function (it) { return { it: it, price: readPrice(it.priceRaw) }; });
+    if (site.sortClient) {
+      parsed.sort(function (a, b) { return (a.price ? a.price.jpy : 1e15) - (b.price ? b.price.jpy : 1e15); });
+    }
+    if (!parsed.length) {
+      stat.innerHTML = "該当なし";
+      return;
+    }
+    var minP = null;
+    parsed.forEach(function (x) { if (x.price && (minP == null || x.price.jpy < minP)) minP = x.price.jpy; });
+    stat.innerHTML = parsed.length + "件" + (minP != null ? ' / 最安 <span class="min">¥' + minP.toLocaleString() + "</span>" : "");
+    var ul = document.createElement("ul");
+    ul.className = "r-items";
+    parsed.slice(0, MAX_ITEMS).forEach(function (x) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = relay(x.it.url);
+      var t = document.createElement("span");
+      t.className = "t";
+      t.textContent = x.it.title || "(タイトルなし)";
+      var p = document.createElement("span");
+      p.className = "p";
+      p.innerHTML = x.price ? x.price.label + (x.price.sub ? " <small>" + x.price.sub + "</small>" : "") : "-";
+      a.appendChild(t);
+      a.appendChild(p);
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+  }
+
+  function showError(card, site, kw, msg) {
+    var stat = card.querySelector(".r-stat");
+    stat.classList.add("err");
+    stat.textContent = msg;
+    var old = card.querySelector(".r-foot"); if (old) old.remove();
+    var foot = document.createElement("div");
+    foot.className = "r-foot";
+    var btn = document.createElement("button");
+    btn.className = "r-retry";
+    btn.textContent = "🔄 再取得";
+    btn.addEventListener("click", function () { fetchSite(card, site, kw, true); });
+    foot.appendChild(btn);
+    card.appendChild(foot);
+  }
+
+  function fetchSite(card, site, kw, force) {
+    var stat = card.querySelector(".r-stat");
+    stat.classList.remove("err");
+    stat.innerHTML = '<span class="spin"></span>取得中…';
+    var foot = card.querySelector(".r-foot"); if (foot) foot.remove();
+
+    if (!force) {
+      var cached = cacheGet(site, kw);
+      if (cached) { showItems(card, site, cached); return Promise.resolve(); }
+    }
+    return jinaFetch(site.search(kw))
+      .then(function (text) {
+        var items = site.parse(text);
+        if (!items.length && /skeleton/i.test(text)) throw new Error("LOADING");
+        cacheSet(site, kw, items);
+        showItems(card, site, items);
+      })
+      .catch(function (e) {
+        var msg = String(e.message || e);
+        if (msg === "RATE") showError(card, site, kw, "アクセス集中 — 1分ほど待って再取得");
+        else if (msg === "LOADING") showError(card, site, kw, "読み込み中に切れました — 再取得で成功しやすいです");
+        else if (/abort/i.test(msg)) showError(card, site, kw, "時間切れ — 再取得してください");
+        else showError(card, site, kw, "取得できませんでした");
+      });
+  }
+
+  function runSearch() {
+    var kw = kwInput.value.trim();
+    if (!kw) { kwInput.focus(); return; }
+    if (running) return;
+    kwInput.blur();
+    pushHistory(kw);
+    var btn = document.getElementById("searchBtn");
+    btn.disabled = true;
+    var results = document.getElementById("results");
+    results.innerHTML = "";
+    var jobs = SITES.map(function (site) {
+      var card = makeCard(site);
+      var open = card.querySelector(".r-open");
+      open.href = relay(site.search(kw));
+      results.appendChild(card);
+      return fetchSite(card, site, kw);
+    });
+    running = 1;
+    Promise.all(jobs).finally(function () { running = 0; btn.disabled = false; });
+  }
+
+  document.getElementById("searchBtn").addEventListener("click", runSearch);
   kwInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") e.target.blur();
+    if (e.key === "Enter") runSearch();
   });
 })();
 </script>
