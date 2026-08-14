@@ -166,11 +166,20 @@
   .r-items { list-style: none; border-top: 1px solid var(--border); }
   .r-items li a {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 10px;
-    padding: 9px 12px;
+    padding: 8px 12px;
     text-decoration: none;
     color: var(--ink);
+  }
+  .r-items .th {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--border);
+    display: block;
   }
   .r-items li:nth-child(odd) a { background: var(--row); }
   .r-items li a:active { background: var(--border); }
@@ -304,7 +313,7 @@
           var img = cell.querySelector("img");
           var priceM = (cell.textContent || "").match(/[$¥￥][0-9.,]+|[0-9,]+円/);
           var title = (img && img.alt) || (a.getAttribute("aria-label") || "").replace(/[$¥￥][0-9.,]+|[0-9,]+円/g, "") || cell.textContent;
-          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url });
+          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url, img: img ? img.src : null });
         });
         return items;
       }
@@ -318,7 +327,8 @@
           var a = p.querySelector("a.Product__titleLink");
           var pr = p.querySelector(".Product__priceValue");
           if (!a || !pr) return;
-          items.push({ title: a.getAttribute("title") || a.textContent.trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href") });
+          var im = p.querySelector(".Product__imageData");
+          items.push({ title: a.getAttribute("title") || a.textContent.trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: im ? (im.getAttribute("src") || im.getAttribute("data-src")) : null });
         });
         return items;
       }
@@ -333,7 +343,7 @@
         var st = (p.pageProps && p.pageProps.initialState) || p.initialState || {};
         var listing = st.search && st.search.items && st.search.items.listing;
         return (listing ? listing.items || [] : []).map(function (it) {
-          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId };
+          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId, img: it.imageUrl || null };
         });
       }
     },
@@ -345,7 +355,7 @@
         if (!d) return [];
         var items = ((((d.props.initialState || {}).searchState || {}).search || {}).result || {}).items || [];
         return items.filter(function (i) { return i.itemStatus !== "SOLD"; }).map(function (it) {
-          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://paypayfleamarket.yahoo.co.jp/item/" + it.id };
+          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://paypayfleamarket.yahoo.co.jp/item/" + it.id, img: it.thumbnailImageUrl || null };
         });
       }
     },
@@ -358,7 +368,9 @@
           var a = b.querySelector("a.link_search_title") || b.querySelector(".item-box__item-name a");
           var pr = b.querySelector(".item-box__item-price");
           if (!a || !pr) return;
-          items.push({ title: (a.getAttribute("title") || a.textContent).trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href") });
+          var im = b.querySelector(".item-box__image-wrapper img");
+          var imSrc = im ? (im.getAttribute("data-src") || im.getAttribute("data-original") || im.getAttribute("src")) : null;
+          items.push({ title: (a.getAttribute("title") || a.textContent).trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: imSrc });
         });
         return items;
       }
@@ -379,7 +391,12 @@
           var pr = a.querySelector(".item-price-en");
           if (!names.length || !pr) return;
           var url = href.indexOf("http") === 0 ? href : "https://netmall.hardoff.co.jp" + href;
-          items.push({ title: names.join(" "), priceRaw: pr.textContent.trim(), url: url });
+          var imSrc = null;
+          a.querySelectorAll("img").forEach(function (im) {
+            var s = im.getAttribute("src") || im.getAttribute("data-src");
+            if (!imSrc && s && s.indexOf("/assets/") === -1) imSrc = s;
+          });
+          items.push({ title: names.join(" "), priceRaw: pr.textContent.trim(), url: url, img: imSrc });
         });
         return items;
       }
@@ -455,11 +472,11 @@
 
   function cacheGet(site, kw) {
     var c = null;
-    try { c = JSON.parse(sessionStorage.getItem("jr:" + site.id + ":" + kw) || "null"); } catch (e) {}
+    try { c = JSON.parse(sessionStorage.getItem("jr2:" + site.id + ":" + kw) || "null"); } catch (e) {}
     return c && Date.now() - c.ts < CACHE_TTL ? c.items : null;
   }
   function cacheSet(site, kw, items) {
-    try { sessionStorage.setItem("jr:" + site.id + ":" + kw, JSON.stringify({ ts: Date.now(), items: items })); } catch (e) {}
+    try { sessionStorage.setItem("jr2:" + site.id + ":" + kw, JSON.stringify({ ts: Date.now(), items: items })); } catch (e) {}
   }
 
   function makeCard(site) {
@@ -497,6 +514,16 @@
       var li = document.createElement("li");
       var a = document.createElement("a");
       a.href = relay(x.it.url);
+      if (x.it.img) {
+        var im = document.createElement("img");
+        im.className = "th";
+        im.loading = "lazy";
+        im.referrerPolicy = "no-referrer"; // 直リンク拒否対策
+        im.alt = "";
+        im.addEventListener("error", function () { im.remove(); });
+        im.src = x.it.img;
+        a.appendChild(im);
+      }
       var t = document.createElement("span");
       t.className = "t";
       t.textContent = x.it.title || "(タイトルなし)";
