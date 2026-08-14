@@ -172,6 +172,8 @@
     <datalist id="history"></datalist>
   </div>
 
+  <button id="openAll" class="btn" type="button" style="margin:0 0 4px">🚀 8サイトまとめて開く</button>
+
   <div class="section">海外相場(eBay)</div>
   <div class="site-grid" id="listEbay"></div>
 
@@ -730,10 +732,48 @@ fetchRate();
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
       saveKw();
       pushHistory(kw);
-      var u = site.url(kw); // タップ時点の型番・日付でURL確定
-      a.href = site.forceBrowser ? relay(u) : u; // アプリ横取り対象サイトのみ中継でブラウザ強制
+      a.href = siteHref(site, kw);
     });
     document.getElementById(site.group === "ebay" ? "listEbay" : "listJp").appendChild(a);
+  });
+
+  // タップ時点の型番・日付でURL確定。アプリ横取り対象サイトのみ中継でブラウザ強制
+  function siteHref(site, kw) {
+    var u = site.url(kw);
+    return site.forceBrowser ? relay(u) : u;
+  }
+
+  // ---- 一括オープン ----
+  // ポップアップ制限で開けなかった分はキューに積み、タップごとに1サイトずつ開く
+  var openAllBtn = document.getElementById("openAll");
+  var queue = [];
+  function updateOpenAll() {
+    openAllBtn.textContent = queue.length
+      ? "▶ 次を開く:" + queue[0].name + "(残り" + queue.length + ")"
+      : "🚀 8サイトまとめて開く";
+  }
+  openAllBtn.addEventListener("click", function () {
+    var kw = kwInput.value.trim();
+    if (!kw) { kwInput.focus(); return; }
+    if (queue.length) { // キュー消化モード:1タップ1サイト
+      var it = queue.shift();
+      var w2 = window.open(it.href, "_blank");
+      try { if (w2) w2.opener = null; } catch (e) {}
+      updateOpenAll();
+      return;
+    }
+    saveKw();
+    pushHistory(kw);
+    SITES.forEach(function (site) {
+      var href = siteHref(site, kw);
+      var w = window.open(href, "_blank");
+      try { if (w) w.opener = null; } catch (e) {}
+      if (!w) queue.push({ name: site.name, href: href }); // ブロックされた分をキューへ
+    });
+    updateOpenAll();
+  });
+  kwInput.addEventListener("input", function () {
+    if (queue.length) { queue = []; updateOpenAll(); }
   });
 })();
 </script>
