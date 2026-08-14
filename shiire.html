@@ -368,9 +368,16 @@
           var a = b.querySelector("a.link_search_title") || b.querySelector(".item-box__item-name a");
           var pr = b.querySelector(".item-box__item-price");
           if (!a || !pr) return;
-          var im = b.querySelector(".item-box__image-wrapper img");
-          var imSrc = im ? (im.getAttribute("data-src") || im.getAttribute("data-original") || im.getAttribute("src")) : null;
-          items.push({ title: (a.getAttribute("title") || a.textContent).trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: imSrc });
+          // ラクマの検索ページは画像が遅延読み込みで、取得時点ではダミー画像しか入っていない。
+          // 本物のURL(img.fril.jp等)が取れた場合のみ表示する
+          var imSrc = null;
+          b.querySelectorAll(".item-box__image-wrapper img").forEach(function (im) {
+            [im.getAttribute("data-src"), im.getAttribute("data-original"), im.getAttribute("src")].forEach(function (s) {
+              if (!imSrc && s && /^https?:\/\//.test(s) && !/dummy|\/assets\//.test(s)) imSrc = s;
+            });
+          });
+          var title = a.textContent.trim() || (a.getAttribute("title") || "").replace(/の商品詳細ページへのリンク\s*$/, "").trim();
+          items.push({ title: title, priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: imSrc });
         });
         return items;
       }
@@ -514,7 +521,7 @@
       var li = document.createElement("li");
       var a = document.createElement("a");
       a.href = relay(x.it.url);
-      if (x.it.img) {
+      if (x.it.img && /^https?:\/\//.test(x.it.img)) {
         var im = document.createElement("img");
         im.className = "th";
         im.loading = "lazy";
