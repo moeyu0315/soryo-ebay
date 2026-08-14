@@ -151,7 +151,7 @@
     text-align:center;
   }
   a.site-btn:active{background:var(--line)}
-  .icon{font-size:24px;line-height:1}
+  .icon{width:30px;height:30px;border-radius:7px;display:block;object-fit:contain}
   .site-name{font-size:15px;font-weight:800;letter-spacing:.01em;line-height:1.3}
 </style>
 
@@ -625,11 +625,11 @@ fetchRate();
 
   var SITES = [
     {
-      id: "ebay", group: "ebay", name: "eBay 出品中", icon: "🌎", color: "#0064d2",
+      id: "ebay", group: "ebay", name: "eBay 出品中", icon: "ebay", color: "#0064d2",
       url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15&ul_noapp=1"; } // ul_noapp=1: eBay公式のアプリ起動無効化。必ずブラウザで開く
     },
     {
-      id: "terapeak", group: "ebay", name: "Terapeak", icon: "📊", color: "#e53238",
+      id: "terapeak", group: "ebay", name: "Terapeak", icon: "ebay", color: "#e53238",
       url: function (kw) {
         var end = Date.now(), start = end - 180 * DAY_MS;
         return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
@@ -639,27 +639,27 @@ fetchRate();
       }
     },
     {
-      id: "mercari", group: "jp", name: "メルカリ", icon: "🛍️", color: "#e64d8c", forceBrowser: true,
+      id: "mercari", group: "jp", name: "メルカリ", icon: "mercari", color: "#e64d8c", forceBrowser: true,
       url: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; }
     },
     {
-      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", icon: "🔨", color: "#dc2626",
+      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", icon: "yahoo_auc", color: "#dc2626",
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", icon: "🏷️", color: "#b45309",
+      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", icon: "yahoo_auc", color: "#b45309",
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "paypay", group: "jp", name: "Yahoo!フリマ", icon: "🛒", color: "#ff0033", forceBrowser: true,
+      id: "paypay", group: "jp", name: "Yahoo!フリマ", icon: "paypay", color: "#ff0033", forceBrowser: true,
       url: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; }
     },
     {
-      id: "fril", group: "jp", name: "楽天ラクマ", icon: "🎀", color: "#bf0000", forceBrowser: true,
+      id: "fril", group: "jp", name: "楽天ラクマ", icon: "fril", color: "#bf0000", forceBrowser: true,
       url: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; }
     },
     {
-      id: "hardoff", group: "jp", name: "ハードオフ", icon: "♻️", color: "#005bac",
+      id: "hardoff", group: "jp", name: "ハードオフ", icon: "hardoff", color: "#005bac",
       url: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); }
     }
   ];
@@ -724,8 +724,8 @@ fetchRate();
     a.target = "_blank";
     a.rel = "noopener";
     a.style.setProperty("--c", site.color);
-    a.innerHTML = '<span class="icon"></span><span class="site-name"></span>';
-    a.querySelector(".icon").textContent = site.icon;
+    a.innerHTML = '<img class="icon" alt=""><span class="site-name"></span>';
+    a.querySelector(".icon").src = "https://moeyu0315.github.io/soryo-ebay/icons/" + site.icon + ".png";
     a.querySelector(".site-name").textContent = site.name;
     a.addEventListener("click", function (e) {
       var kw = kwInput.value.trim();
