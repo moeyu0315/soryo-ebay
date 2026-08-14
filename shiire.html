@@ -20,63 +20,65 @@
     font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
     font-size:16px;line-height:1.5;min-height:100vh
   }
-  header{background:linear-gradient(180deg,#1d4d3e,#163d31);color:#fff;padding:14px 16px}
+  header{background:linear-gradient(180deg,#1d4d3e,#163d31);color:#fff;padding:12px 16px}
   header .hd{max-width:560px;margin:0 auto}
-  header h1{font-size:18px;font-weight:700}
-  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+  header h1{font-size:17px;font-weight:700}
+  .wrap{max-width:560px;margin:0 auto;padding:14px 12px 40px}
 
   .kw-wrap{position:relative;margin-bottom:14px}
   #keyword{
     width:100%;
-    font-size:16px; /* 16px未満だとiOSで自動ズームされる */
-    padding:15px 50px 15px 14px;
+    font-size:17px;
+    font-weight:600;
+    padding:16px 52px 16px 15px;
     border:2px solid var(--line);
-    border-radius:12px;
+    border-radius:14px;
     outline:none;
-    background:var(--card);
+    background:#fff;
     color:var(--txt);
   }
   #keyword:focus{border-color:var(--accent)}
   #clearKw{
-    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    position:absolute;right:7px;top:50%;transform:translateY(-50%);
     width:42px;height:42px;border:none;border-radius:50%;
     background:transparent;color:var(--sub);font-size:18px;cursor:pointer
   }
   #clearKw:active{background:var(--line)}
 
-  .section{font-size:12px;font-weight:700;color:var(--sub);margin:16px 2px 8px;letter-spacing:.05em}
-  .site-list{display:flex;flex-direction:column;gap:9px}
+  .section{font-size:12.5px;font-weight:700;color:var(--sub);margin:14px 2px 8px;letter-spacing:.05em}
+  .site-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   a.site-btn{
-    display:flex;align-items:center;gap:12px;
-    min-height:60px;
-    background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-height:74px;
+    background:#fff;
     border:1px solid var(--line);
+    border-left:6px solid var(--c,var(--accent));
     border-radius:14px;
-    box-shadow:0 1px 2px rgba(60,50,20,.05);
-    padding:10px 16px;
+    box-shadow:0 1px 3px rgba(60,50,20,.08);
+    padding:10px 8px;
     text-decoration:none;
     color:var(--txt);
+    text-align:center;
   }
   a.site-btn:active{background:var(--line)}
-  .site-name{flex:1;font-size:16px;font-weight:700}
-  .site-desc{font-size:11.5px;color:var(--sub);font-weight:400;display:block;margin-top:1px}
-  .arrow{color:var(--accent);font-size:20px;font-weight:700}
+  .icon{font-size:24px;line-height:1}
+  .site-name{font-size:15px;font-weight:800;letter-spacing:.01em;line-height:1.3}
 </style>
 
 <header><div class="hd"><h1>🔍 仕入れ判断 一括検索</h1></div></header>
 <div class="wrap">
 
   <div class="kw-wrap">
-    <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="done">
+    <input type="text" id="keyword" placeholder="型番を入力" list="history" autocomplete="off" enterkeyhint="done">
     <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
     <datalist id="history"></datalist>
   </div>
 
   <div class="section">海外相場(eBay)</div>
-  <div class="site-list" id="listEbay"></div>
+  <div class="site-grid" id="listEbay"></div>
 
   <div class="section">国内相場・仕入れ先</div>
-  <div class="site-list" id="listJp"></div>
+  <div class="site-grid" id="listJp"></div>
 
 </div>
 
@@ -88,11 +90,11 @@
 
   var SITES = [
     {
-      id: "ebay", group: "ebay", name: "eBay 出品中", desc: "送料込み最安値順(米国)",
+      id: "ebay", group: "ebay", name: "eBay 出品中", icon: "🌎", color: "#0064d2",
       url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
     },
     {
-      id: "terapeak", group: "ebay", name: "Terapeak 販売履歴", desc: "過去180日・安い順 ※要セラーログイン",
+      id: "terapeak", group: "ebay", name: "Terapeak", icon: "📊", color: "#e53238",
       url: function (kw) {
         var end = Date.now(), start = end - 180 * DAY_MS;
         return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
@@ -101,27 +103,27 @@
       }
     },
     {
-      id: "mercari", group: "jp", name: "メルカリ", desc: "販売中・安い順",
+      id: "mercari", group: "jp", name: "メルカリ", icon: "🛍️", color: "#e64d8c",
       url: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; }
     },
     {
-      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", desc: "現在価格の安い順",
+      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", icon: "🔨", color: "#dc2626",
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", desc: "過去の落札価格・安い順",
+      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", icon: "🏷️", color: "#b45309",
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "paypay", group: "jp", name: "Yahoo!フリマ", desc: "販売中・安い順",
+      id: "paypay", group: "jp", name: "Yahoo!フリマ", icon: "🛒", color: "#ff0033",
       url: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; }
     },
     {
-      id: "fril", group: "jp", name: "楽天ラクマ", desc: "販売中・安い順",
+      id: "fril", group: "jp", name: "楽天ラクマ", icon: "🎀", color: "#bf0000",
       url: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; }
     },
     {
-      id: "hardoff", group: "jp", name: "ハードオフ", desc: "ネットモール(公式通販)",
+      id: "hardoff", group: "jp", name: "ハードオフ", icon: "♻️", color: "#005bac",
       url: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); }
     }
   ];
@@ -166,9 +168,10 @@
     var a = document.createElement("a");
     a.className = "site-btn";
     a.href = "#";
-    a.innerHTML = '<span class="site-name"><span class="nm"></span><span class="site-desc"></span></span><span class="arrow">›</span>';
-    a.querySelector(".nm").textContent = site.name;
-    a.querySelector(".site-desc").textContent = site.desc;
+    a.style.setProperty("--c", site.color);
+    a.innerHTML = '<span class="icon"></span><span class="site-name"></span>';
+    a.querySelector(".icon").textContent = site.icon;
+    a.querySelector(".site-name").textContent = site.name;
     a.addEventListener("click", function (e) {
       var kw = kwInput.value.trim();
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
