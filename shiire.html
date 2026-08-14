@@ -88,13 +88,18 @@
 
   var DAY_MS = 24 * 60 * 60 * 1000;
 
+  // アプリに対応画面がないURL(落札相場・ハードオフ検索・Terapeak)は、
+  // アプリに横取りされると何も開けないため、中継ページ経由でブラウザ表示を強制する
+  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
+  function relay(url) { return GO_URL + "#" + encodeURIComponent(url); }
+
   var SITES = [
     {
       id: "ebay", group: "ebay", name: "eBay 出品中", icon: "🌎", color: "#0064d2",
       url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
     },
     {
-      id: "terapeak", group: "ebay", name: "Terapeak", icon: "📊", color: "#e53238",
+      id: "terapeak", group: "ebay", name: "Terapeak", icon: "📊", color: "#e53238", forceBrowser: true,
       url: function (kw) {
         var end = Date.now(), start = end - 180 * DAY_MS;
         return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
@@ -111,7 +116,7 @@
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", icon: "🏷️", color: "#b45309",
+      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", icon: "🏷️", color: "#b45309", forceBrowser: true,
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
@@ -123,7 +128,7 @@
       url: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; }
     },
     {
-      id: "hardoff", group: "jp", name: "ハードオフ", icon: "♻️", color: "#005bac",
+      id: "hardoff", group: "jp", name: "ハードオフ", icon: "♻️", color: "#005bac", forceBrowser: true,
       url: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); }
     }
   ];
@@ -198,7 +203,8 @@
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
       saveKw(); // 開く直前に必ず保存(戻ったとき確実に復元するため)
       pushHistory(kw);
-      a.href = site.url(kw); // タップ時点の型番・日付でURL確定。直接開く(アプリがあればアプリ)
+      var u = site.url(kw); // タップ時点の型番・日付でURL確定
+      a.href = site.forceBrowser ? relay(u) : u; // アプリ非対応ページはブラウザ強制、他は直接(アプリOK)
     });
     document.getElementById(site.group === "ebay" ? "listEbay" : "listJp").appendChild(a);
   });
