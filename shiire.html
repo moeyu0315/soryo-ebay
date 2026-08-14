@@ -18,10 +18,8 @@
     --accent-ink: #ffffff;
     --border: #dfe5ee;
     --input-bg: #ffffff;
-    --row: #f7f9fc;
-    --ok: #0e7a4d;
-    --ok-bg: #e3f4ec;
-    --err: #b3261e;
+    --done: #0e7a4d;
+    --done-bg: #eef7f2;
     --shadow: 0 1px 3px rgba(20, 34, 62, .07);
   }
   @media (prefers-color-scheme: dark) {
@@ -34,10 +32,8 @@
       --accent-ink: #0d1526;
       --border: #2a3547;
       --input-bg: #121a26;
-      --row: #131b28;
-      --ok: #4cc38a;
-      --ok-bg: #123123;
-      --err: #ff8a80;
+      --done: #4cc38a;
+      --done-bg: #14231c;
       --shadow: 0 1px 3px rgba(0, 0, 0, .35);
     }
   }
@@ -50,10 +46,8 @@
     --accent-ink: #0d1526;
     --border: #2a3547;
     --input-bg: #121a26;
-    --row: #131b28;
-    --ok: #4cc38a;
-    --ok-bg: #123123;
-    --err: #ff8a80;
+    --done: #4cc38a;
+    --done-bg: #14231c;
     --shadow: 0 1px 3px rgba(0, 0, 0, .35);
   }
 
@@ -69,25 +63,28 @@
   .container { max-width: 560px; margin: 0 auto; }
   h1 { font-size: 17px; margin-bottom: 10px; }
 
-  .card {
+  .kw-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 12px;
     box-shadow: var(--shadow);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
   }
-
-  .kw-wrap { position: relative; margin-bottom: 8px; }
+  .kw-wrap { position: relative; }
   #clearKw {
     position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    width: 38px; height: 38px; border: none; border-radius: 50%;
-    background: transparent; color: var(--sub); font-size: 16px; cursor: pointer;
+    width: 40px; height: 40px; border: none; border-radius: 50%;
+    background: transparent; color: var(--sub); font-size: 17px; cursor: pointer;
   }
+  #clearKw:active { background: var(--border); }
   #keyword {
     width: 100%;
     font-size: 16px; /* 16px未満だとiOSで自動ズームされる */
-    padding: 13px 46px 13px 13px;
+    padding: 14px 48px 14px 14px;
     border: 2px solid var(--border);
     border-radius: 10px;
     outline: none;
@@ -95,29 +92,68 @@
     color: var(--ink);
   }
   #keyword:focus { border-color: var(--accent); }
-  #searchBtn {
-    width: 100%;
-    font-size: 16px; font-weight: 700; min-height: 48px;
-    background: var(--accent); color: var(--accent-ink);
-    border: none; border-radius: 10px; cursor: pointer;
-  }
-  #searchBtn:active { transform: translateY(1px); opacity: .9; }
-  #searchBtn:disabled { opacity: .55; }
 
-  /* 仕入れ上限計算 */
-  .calc-row { display: flex; align-items: center; gap: 8px; }
-  .calc-row label { font-size: 12px; color: var(--sub); white-space: nowrap; }
+  .section {
+    font-size: 11px; font-weight: 700; color: var(--sub);
+    letter-spacing: .08em; margin: 14px 2px 6px;
+  }
+  .site-list { display: flex; flex-direction: column; gap: 8px; }
+  a.site-btn {
+    display: flex; align-items: center; gap: 10px;
+    min-height: 58px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 8px 14px;
+    text-decoration: none;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+  a.site-btn:active { background: var(--border); }
+  .check {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: transparent;
+  }
+  .site-info { flex: 1; min-width: 0; }
+  .site-name { font-size: 15px; font-weight: 700; }
+  .site-desc { font-size: 11px; color: var(--sub); margin-top: 1px; }
+  .arrow { color: var(--sub); font-size: 16px; flex-shrink: 0; }
+
+  a.site-btn.done { background: var(--done-bg); border-color: var(--done); }
+  a.site-btn.done .check { border-color: var(--done); background: var(--done); color: #fff; }
+  a.site-btn.done .site-name { color: var(--done); }
+
+  .reset-row { margin-top: 10px; text-align: center; }
+  #resetVisited {
+    font-size: 12px; color: var(--sub);
+    background: none; border: none; cursor: pointer;
+    padding: 8px 16px; text-decoration: underline;
+  }
+
+  details.calc {
+    margin-top: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--sub);
+  }
+  details.calc summary { cursor: pointer; font-weight: 700; -webkit-tap-highlight-color: transparent; }
+  .calc-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .calc-row label { font-size: 12px; white-space: nowrap; }
   #sellPrice {
     width: 90px; font-size: 16px; padding: 9px;
     border: 2px solid var(--border); border-radius: 8px;
     background: var(--input-bg); color: var(--ink); outline: none;
   }
-  #sellPrice:focus { border-color: var(--accent); }
-  .limit-out { flex: 1; text-align: right; font-size: 12px; color: var(--sub); }
-  .limit-out b { display: block; font-size: 20px; color: var(--ok); font-variant-numeric: tabular-nums; }
-  details.calc-set { margin-top: 8px; font-size: 12px; color: var(--sub); }
-  details.calc-set summary { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .limit-out { flex: 1; text-align: right; font-size: 12px; }
+  .limit-out b { display: block; font-size: 20px; color: var(--done); font-variant-numeric: tabular-nums; }
+  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   .set-grid label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
   .set-grid input {
     font-size: 14px; padding: 8px;
@@ -125,125 +161,46 @@
     background: var(--input-bg); color: var(--ink);
   }
 
-  /* サマリー行 */
-  .s-row { border-top: 1px solid var(--border); }
-  .s-row:first-child { border-top: none; }
-  .s-main {
-    display: flex; align-items: center; gap: 6px;
-    width: 100%; min-height: 48px; padding: 6px 2px;
-    background: none; border: none; cursor: pointer;
-    font-family: inherit; color: var(--ink); text-align: left;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .s-name { font-size: 13.5px; font-weight: 700; width: 8.2em; flex-shrink: 0; }
-  .s-badge {
-    font-size: 9.5px; font-weight: 700; color: #fff; background: #b45309;
-    padding: 1px 6px; border-radius: 99px; flex-shrink: 0;
-  }
-  .s-hit {
-    font-size: 9.5px; font-weight: 700; color: var(--ok); background: var(--ok-bg);
-    padding: 1px 6px; border-radius: 99px; flex-shrink: 0;
-  }
-  .s-min { flex: 1; text-align: right; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
-  .s-min.na { color: var(--sub); font-weight: 400; font-size: 12px; }
-  .s-min.err { color: var(--err); font-weight: 400; font-size: 12px; }
-  .s-count { font-size: 11px; color: var(--sub); width: 3.6em; text-align: right; flex-shrink: 0; }
-  .s-chev { color: var(--sub); font-size: 11px; flex-shrink: 0; width: 1em; text-align: center; transition: transform .15s; }
-  .s-row.open .s-chev { transform: rotate(180deg); }
-
-  .s-detail { display: none; padding-bottom: 8px; }
-  .s-row.open .s-detail { display: block; }
-  .d-items { list-style: none; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .d-items li a {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 10px; text-decoration: none; color: var(--ink);
-  }
-  .d-items li:nth-child(odd) a { background: var(--row); }
-  .d-items li a:active { background: var(--border); }
-  .d-items .th {
-    width: 48px; height: 48px; border-radius: 8px; object-fit: cover;
-    flex-shrink: 0; background: var(--border); display: block;
-  }
-  .d-items .t {
-    flex: 1; font-size: 12px; line-height: 1.45;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; min-width: 0;
-  }
-  .d-items .p { font-size: 13.5px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .d-items .p small { font-weight: 400; font-size: 10px; color: var(--sub); }
-  .d-foot { display: flex; gap: 8px; margin-top: 8px; }
-  .d-foot a, .d-foot button {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    min-height: 40px; font-size: 13px; font-weight: 700;
-    color: var(--accent); background: none;
-    border: 1.5px solid var(--accent); border-radius: 8px;
-    text-decoration: none; cursor: pointer; font-family: inherit;
-  }
-  .d-foot a:active, .d-foot button:active { background: var(--accent); color: var(--accent-ink); }
-
-  .ebay-line { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 6px 2px; border-top: 1px solid var(--border); }
-  .ebay-line .s-name { font-size: 13.5px; }
-  .ebay-line a {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    min-height: 38px; font-size: 12.5px; font-weight: 700;
-    color: var(--accent); border: 1.5px solid var(--accent);
-    border-radius: 8px; text-decoration: none;
-  }
-  .ebay-line a:active { background: var(--accent); color: var(--accent-ink); }
-
-  .spin {
-    display: inline-block; width: 12px; height: 12px;
-    border: 2px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: sp 1s linear infinite; vertical-align: -2px;
-  }
-  @keyframes sp { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
-
   footer { margin-top: 18px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
 </style>
 
 <div class="container">
   <h1>🔍 仕入れ判断 一括検索</h1>
 
-  <div class="card">
+  <div class="kw-card">
     <div class="kw-wrap">
-      <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="search">
+      <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="done">
       <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
       <datalist id="history"></datalist>
     </div>
-    <button id="searchBtn">🔍 一括検索</button>
   </div>
 
-  <div class="card">
+  <div class="section">海外相場(eBay)</div>
+  <div class="site-list" id="listEbay"></div>
+
+  <div class="section">国内相場・仕入れ先</div>
+  <div class="site-list" id="listJp"></div>
+
+  <div class="reset-row"><button id="resetVisited" type="button">✓をリセット</button></div>
+
+  <details class="calc">
+    <summary>💰 仕入れ上限計算(eBay売値から)</summary>
     <div class="calc-row">
       <label for="sellPrice">eBay売値 $</label>
       <input type="number" id="sellPrice" inputmode="decimal" placeholder="80">
       <div class="limit-out">仕入れ上限<b id="limitOut">-</b></div>
     </div>
-    <details class="calc-set">
-      <summary>⚙ 計算設定(手数料・送料・利益・為替)</summary>
-      <div class="set-grid">
-        <label>eBay手数料+経費(%)<input type="number" id="setFee" inputmode="decimal"></label>
-        <label>国際送料(円)<input type="number" id="setShip" inputmode="numeric"></label>
-        <label>確保したい利益(円)<input type="number" id="setProfit" inputmode="numeric"></label>
-        <label>為替(円/$) 空欄=自動<input type="number" id="setRate" inputmode="decimal" placeholder="自動"></label>
-      </div>
-    </details>
-  </div>
-
-  <div class="card" id="summaryCard" hidden>
-    <div id="summary"></div>
-    <div class="ebay-line">
-      <span class="s-name">eBay</span>
-      <a id="ebayLink" href="#">出品中 ↗</a>
-      <a id="terapeakLink" href="#">Terapeak ↗</a>
+    <div class="set-grid">
+      <label>eBay手数料+経費(%)<input type="number" id="setFee" inputmode="decimal"></label>
+      <label>国際送料(円)<input type="number" id="setShip" inputmode="numeric"></label>
+      <label>確保したい利益(円)<input type="number" id="setProfit" inputmode="numeric"></label>
+      <label>為替(円/$) 空欄=自動<input type="number" id="setRate" inputmode="decimal" placeholder="自動"></label>
     </div>
-  </div>
+  </details>
 
   <footer>
-    行をタップで商品リスト展開/もう一度タップで閉じる。<br>
-    商品タップで各サイトの商品ページ(戻るでこの画面に復帰)。<br>
-    「仕入圏内」=最安値が仕入れ上限以下のサイト。
+    型番を入れてサイトをタップ → 確認したら「戻る」でこの画面へ。<br>
+    確認済みのサイトは緑の✓に変わります(型番を変えるとリセット)。
   </footer>
 </div>
 
@@ -251,30 +208,146 @@
 (function () {
   "use strict";
 
-  var JINA = "https://r.jina.ai/";
   var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
-  var MAX_ITEMS = 8;
-  var CACHE_TTL = 10 * 60 * 1000;
   var DAY_MS = 24 * 60 * 60 * 1000;
 
   // 外部サイトを直接開くとiOSのユニバーサルリンクでアプリに飛ぶため、中継ページ経由で開く
   function relay(url) { return GO_URL + "#" + encodeURIComponent(url); }
 
-  function parseNextData(text) {
-    var m = text.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-    return m ? JSON.parse(m[1]) : null;
-  }
-  function toDoc(text) { return new DOMParser().parseFromString(text, "text/html"); }
-  function num(s) {
-    var m = String(s == null ? "" : s).replace(/,/g, "").match(/[0-9]+(?:\.[0-9]+)?/);
-    return m ? parseFloat(m[0]) : null;
-  }
   function loadJSON(key, fallback) {
     try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
   }
   function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
-  // ---- 為替レート(自動取得・12時間キャッシュ) ----
+  var SITES = [
+    {
+      id: "ebay", group: "ebay", name: "eBay 出品中", desc: "送料込み最安値順(米国)",
+      url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
+    },
+    {
+      id: "terapeak", group: "ebay", name: "Terapeak 販売履歴", desc: "過去180日・安い順 ※要セラーログイン",
+      url: function (kw) {
+        var end = Date.now(), start = end - 180 * DAY_MS;
+        return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
+          "&dayRange=180&endDate=" + end + "&startDate=" + start +
+          "&categoryId=0&offset=0&limit=50&sorting=avgsalesprice&tabName=SOLD&tz=" + encodeURIComponent("Asia/Tokyo");
+      }
+    },
+    {
+      id: "mercari", group: "jp", name: "メルカリ", desc: "販売中・安い順",
+      url: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; }
+    },
+    {
+      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", desc: "現在価格の安い順",
+      url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
+    },
+    {
+      id: "yahoo_closed", group: "jp", name: "ヤフオク 落札相場", desc: "過去の落札価格・安い順",
+      url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
+    },
+    {
+      id: "paypay", group: "jp", name: "Yahoo!フリマ", desc: "販売中・安い順",
+      url: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; }
+    },
+    {
+      id: "fril", group: "jp", name: "楽天ラクマ", desc: "販売中・安い順",
+      url: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; }
+    },
+    {
+      id: "hardoff", group: "jp", name: "ハードオフ", desc: "ネットモール(公式通販)",
+      url: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); }
+    }
+  ];
+
+  // ---- 検索窓・履歴 ----
+  var STORAGE_HISTORY = "sourcing_tool_history";
+  var STORAGE_LAST = "sourcing_tool_last_kw";
+  var STORAGE_VISITED = "sourcing_tool_visited"; // {kw, visited:{siteId:1}}
+
+  var kwInput = document.getElementById("keyword");
+  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
+
+  function renderHistory() {
+    var list = document.getElementById("history");
+    list.innerHTML = "";
+    loadJSON(STORAGE_HISTORY, []).forEach(function (kw) {
+      var opt = document.createElement("option");
+      opt.value = kw;
+      list.appendChild(opt);
+    });
+  }
+  function pushHistory(kw) {
+    var hist = loadJSON(STORAGE_HISTORY, []).filter(function (k) { return k !== kw; });
+    hist.unshift(kw);
+    saveJSON(STORAGE_HISTORY, hist.slice(0, 15));
+    renderHistory();
+  }
+  renderHistory();
+
+  // ---- 訪問済み管理(型番ごと) ----
+  function visitedState() {
+    var v = loadJSON(STORAGE_VISITED, { kw: "", visited: {} });
+    if (v.kw !== kwInput.value.trim()) return { kw: kwInput.value.trim(), visited: {} };
+    return v;
+  }
+  function markVisited(siteId) {
+    var v = visitedState();
+    v.visited[siteId] = 1;
+    saveJSON(STORAGE_VISITED, v);
+    refreshChecks();
+  }
+  function refreshChecks() {
+    var v = visitedState();
+    SITES.forEach(function (site) {
+      var el = document.getElementById("btn_" + site.id);
+      if (!el) return;
+      var done = !!v.visited[site.id];
+      el.classList.toggle("done", done);
+      el.querySelector(".check").textContent = done ? "✓" : "";
+    });
+  }
+
+  kwInput.addEventListener("input", function () {
+    saveJSON(STORAGE_LAST, kwInput.value);
+    refreshChecks(); // 型番が変わったら✓もリセット表示
+  });
+  kwInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") e.target.blur();
+  });
+  document.getElementById("clearKw").addEventListener("click", function () {
+    kwInput.value = "";
+    saveJSON(STORAGE_LAST, "");
+    refreshChecks();
+    kwInput.focus();
+  });
+  document.getElementById("resetVisited").addEventListener("click", function () {
+    saveJSON(STORAGE_VISITED, { kw: kwInput.value.trim(), visited: {} });
+    refreshChecks();
+  });
+
+  // ---- サイトボタン ----
+  SITES.forEach(function (site) {
+    var a = document.createElement("a");
+    a.className = "site-btn";
+    a.id = "btn_" + site.id;
+    a.href = "#";
+    a.innerHTML = '<span class="check"></span>' +
+      '<span class="site-info"><span class="site-name"></span><br><span class="site-desc"></span></span>' +
+      '<span class="arrow">›</span>';
+    a.querySelector(".site-name").textContent = site.name;
+    a.querySelector(".site-desc").textContent = site.desc;
+    a.addEventListener("click", function (e) {
+      var kw = kwInput.value.trim();
+      if (!kw) { e.preventDefault(); kwInput.focus(); return; }
+      pushHistory(kw);
+      markVisited(site.id);
+      a.href = relay(site.url(kw)); // タップ時点の型番・日付でURL確定、同じタブで開く
+    });
+    document.getElementById(site.group === "ebay" ? "listEbay" : "listJp").appendChild(a);
+  });
+  refreshChecks();
+
+  // ---- 仕入れ上限計算(折りたたみ) ----
   var autoRate = 155;
   (function () {
     var c = loadJSON("usd_jpy", null);
@@ -288,19 +361,8 @@
     }).catch(function () {});
   })();
 
-  function readPrice(s) {
-    if (!s) return null;
-    var v = num(s);
-    if (v == null) return null;
-    if (/[$]/.test(s)) return { jpy: Math.round(v * autoRate), label: "約¥" + Math.round(v * autoRate).toLocaleString(), sub: "$" + v };
-    return { jpy: v, label: "¥" + v.toLocaleString(), sub: null };
-  }
-
-  // ---- 仕入れ上限計算 ----
   var SET_KEY = "sourcing_calc_settings";
   var settings = loadJSON(SET_KEY, { fee: 20, ship: 3000, profit: 3000, rate: "" });
-  var limitJpy = null;
-
   function bindSetting(id, key) {
     var el = document.getElementById(id);
     el.value = settings[key];
@@ -321,383 +383,15 @@
     saveJSON("sourcing_sell_price", sellEl.value);
     updateLimit();
   });
-
   function updateLimit() {
     var out = document.getElementById("limitOut");
     var sell = parseFloat(sellEl.value);
-    if (!sell || sell <= 0) { limitJpy = null; out.textContent = "-"; refreshHitBadges(); return; }
+    if (!sell || sell <= 0) { out.textContent = "-"; return; }
     var rate = parseFloat(settings.rate) || autoRate;
     var fee = (parseFloat(settings.fee) || 0) / 100;
     var gross = sell * rate * (1 - fee) - (parseFloat(settings.ship) || 0) - (parseFloat(settings.profit) || 0);
-    limitJpy = Math.max(0, Math.floor(gross / 100) * 100); // 100円単位で切り捨て
-    out.textContent = "¥" + limitJpy.toLocaleString();
-    refreshHitBadges();
+    out.textContent = "¥" + Math.max(0, Math.floor(gross / 100) * 100).toLocaleString();
   }
-
-  // ---- サイト定義(パーサーは実データで検証済み) ----
-  var SITES = [
-    {
-      id: "yahoo_closed", name: "ヤフオク落札", badge: "実績",
-      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
-      parse: function (text) {
-        var d = parseNextData(text);
-        if (!d) return [];
-        var p = d.props || {};
-        var st = (p.pageProps && p.pageProps.initialState) || p.initialState || {};
-        var listing = st.search && st.search.items && st.search.items.listing;
-        return (listing ? listing.items || [] : []).map(function (it) {
-          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId, img: it.imageUrl || null };
-        });
-      }
-    },
-    {
-      id: "yahoo_active", name: "ヤフオク出品中",
-      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
-      parse: function (text) {
-        var items = [];
-        toDoc(text).querySelectorAll(".Product").forEach(function (p) {
-          var a = p.querySelector("a.Product__titleLink");
-          var pr = p.querySelector(".Product__priceValue");
-          if (!a || !pr) return;
-          var im = p.querySelector(".Product__imageData");
-          items.push({ title: a.getAttribute("title") || a.textContent.trim(), priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: im ? (im.getAttribute("src") || im.getAttribute("data-src")) : null });
-        });
-        return items;
-      }
-    },
-    {
-      id: "mercari", name: "メルカリ",
-      search: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; },
-      parse: function (text) {
-        var items = [];
-        toDoc(text).querySelectorAll('[data-testid="item-cell"]').forEach(function (cell) {
-          var a = cell.querySelector('a[href*="/item/"]');
-          if (!a) return;
-          var href = a.getAttribute("href");
-          var url = href.indexOf("http") === 0 ? href : "https://jp.mercari.com" + href;
-          var img = cell.querySelector("img");
-          var priceM = (cell.textContent || "").match(/[$¥￥][0-9.,]+|[0-9,]+円/);
-          var title = (img && img.alt) || (a.getAttribute("aria-label") || "").replace(/[$¥￥][0-9.,]+|[0-9,]+円/g, "") || cell.textContent;
-          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url, img: img ? img.src : null });
-        });
-        return items;
-      }
-    },
-    {
-      id: "paypay", name: "Yahoo!フリマ",
-      search: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; },
-      parse: function (text) {
-        var d = parseNextData(text);
-        if (!d) return [];
-        var items = ((((d.props.initialState || {}).searchState || {}).search || {}).result || {}).items || [];
-        return items.filter(function (i) { return i.itemStatus !== "SOLD"; }).map(function (it) {
-          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://paypayfleamarket.yahoo.co.jp/item/" + it.id, img: it.thumbnailImageUrl || null };
-        });
-      }
-    },
-    {
-      id: "fril", name: "ラクマ",
-      search: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; },
-      parse: function (text) {
-        var items = [];
-        toDoc(text).querySelectorAll(".item-box").forEach(function (b) {
-          var a = b.querySelector("a.link_search_title") || b.querySelector(".item-box__item-name a");
-          var pr = b.querySelector(".item-box__item-price");
-          if (!a || !pr) return;
-          // ラクマの検索ページは画像が遅延読み込みで、本物のURLが取れた場合のみ表示
-          var imSrc = null;
-          b.querySelectorAll(".item-box__image-wrapper img").forEach(function (im) {
-            [im.getAttribute("data-src"), im.getAttribute("data-original"), im.getAttribute("src")].forEach(function (s) {
-              if (!imSrc && s && /^https?:\/\//.test(s) && !/dummy|\/assets\//.test(s)) imSrc = s;
-            });
-          });
-          var title = a.textContent.trim() || (a.getAttribute("title") || "").replace(/の商品詳細ページへのリンク\s*$/, "").trim();
-          items.push({ title: title, priceRaw: pr.textContent.trim(), url: a.getAttribute("href"), img: imSrc });
-        });
-        return items;
-      }
-    },
-    {
-      id: "hardoff", name: "ハードオフ", sortClient: true,
-      search: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); },
-      parse: function (text) {
-        var seen = {};
-        var items = [];
-        toDoc(text).querySelectorAll('a[href*="/product/"]').forEach(function (a) {
-          var href = a.getAttribute("href");
-          if (seen[href]) return;
-          seen[href] = 1;
-          var names = [];
-          a.querySelectorAll('[class*="item-name"], .item-code').forEach(function (e) { names.push(e.textContent.trim()); });
-          var pr = a.querySelector(".item-price-en");
-          if (!names.length || !pr) return;
-          var url = href.indexOf("http") === 0 ? href : "https://netmall.hardoff.co.jp" + href;
-          var imSrc = null;
-          a.querySelectorAll("img").forEach(function (im) {
-            var s = im.getAttribute("src") || im.getAttribute("data-src");
-            if (!imSrc && s && s.indexOf("/assets/") === -1) imSrc = s;
-          });
-          items.push({ title: names.join(" "), priceRaw: pr.textContent.trim(), url: url, img: imSrc });
-        });
-        return items;
-      }
-    }
-  ];
-
-  // ---- 検索窓 ----
-  var STORAGE_HISTORY = "sourcing_tool_history";
-  var STORAGE_LAST = "sourcing_tool_last_kw";
-  var kwInput = document.getElementById("keyword");
-  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
-  kwInput.addEventListener("input", function () { saveJSON(STORAGE_LAST, kwInput.value); });
-  document.getElementById("clearKw").addEventListener("click", function () {
-    kwInput.value = "";
-    saveJSON(STORAGE_LAST, "");
-    kwInput.focus();
-  });
-  function renderHistory() {
-    var list = document.getElementById("history");
-    list.innerHTML = "";
-    loadJSON(STORAGE_HISTORY, []).forEach(function (kw) {
-      var opt = document.createElement("option");
-      opt.value = kw;
-      list.appendChild(opt);
-    });
-  }
-  function pushHistory(kw) {
-    var hist = loadJSON(STORAGE_HISTORY, []).filter(function (k) { return k !== kw; });
-    hist.unshift(kw);
-    saveJSON(STORAGE_HISTORY, hist.slice(0, 15));
-    renderHistory();
-  }
-  renderHistory();
-
-  // ---- eBay/Terapeakリンク ----
-  function ebayUrl(kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
-  function terapeakUrl(kw) {
-    var end = Date.now(), start = end - 180 * DAY_MS;
-    return "https://www.ebay.com/sh/research?marketplace=EBAY-US&keywords=" + encodeURIComponent(kw) +
-      "&dayRange=180&endDate=" + end + "&startDate=" + start +
-      "&categoryId=0&offset=0&limit=50&sorting=avgsalesprice&tabName=SOLD&tz=" + encodeURIComponent("Asia/Tokyo");
-  }
-  [["ebayLink", ebayUrl], ["terapeakLink", terapeakUrl]].forEach(function (pair) {
-    var el = document.getElementById(pair[0]);
-    el.addEventListener("click", function (e) {
-      var kw = kwInput.value.trim();
-      if (!kw) { e.preventDefault(); kwInput.focus(); return; }
-      pushHistory(kw);
-      el.href = relay(pair[1](kw));
-    });
-  });
-
-  // ---- 取得 ----
-  function jinaFetch(url, timeoutMs) {
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 35000);
-    return fetch(JINA + url, { signal: ctrl.signal, headers: { "X-Return-Format": "html" } })
-      .then(function (r) {
-        if (r.status === 429) throw new Error("RATE");
-        if (!r.ok) throw new Error("HTTP" + r.status);
-        return r.text();
-      })
-      .finally(function () { clearTimeout(timer); });
-  }
-  function cacheGet(site, kw) {
-    var c = loadCache("jr2:" + site.id + ":" + kw);
-    return c && Date.now() - c.ts < CACHE_TTL ? c.items : null;
-  }
-  function loadCache(key) {
-    try { return JSON.parse(sessionStorage.getItem(key) || "null"); } catch (e) { return null; }
-  }
-  function cacheSet(site, kw, items) {
-    try { sessionStorage.setItem("jr2:" + site.id + ":" + kw, JSON.stringify({ ts: Date.now(), items: items })); } catch (e) {}
-  }
-
-  // ---- サマリー描画 ----
-  var rowState = {}; // siteId -> {row, items, kw}
-
-  function buildSummary(kw) {
-    var summary = document.getElementById("summary");
-    summary.innerHTML = "";
-    document.getElementById("summaryCard").hidden = false;
-    SITES.forEach(function (site) {
-      var row = document.createElement("div");
-      row.className = "s-row";
-      var main = document.createElement("button");
-      main.className = "s-main";
-      main.type = "button";
-      main.innerHTML = '<span class="s-name"></span>' +
-        (site.badge ? '<span class="s-badge">' + site.badge + "</span>" : "") +
-        '<span class="s-hit" hidden>仕入圏内</span>' +
-        '<span class="s-min"><span class="spin"></span></span>' +
-        '<span class="s-count"></span>' +
-        '<span class="s-chev">▼</span>';
-      main.querySelector(".s-name").textContent = site.name;
-      var detail = document.createElement("div");
-      detail.className = "s-detail";
-      row.appendChild(main);
-      row.appendChild(detail);
-      main.addEventListener("click", function () { row.classList.toggle("open"); });
-      summary.appendChild(row);
-      rowState[site.id] = { row: row, items: null, kw: kw, minJpy: null };
-    });
-  }
-
-  function refreshHitBadges() {
-    Object.keys(rowState).forEach(function (id) {
-      var st = rowState[id];
-      if (!st || !st.row) return;
-      var hit = st.row.querySelector(".s-hit");
-      if (hit) hit.hidden = !(limitJpy != null && st.minJpy != null && st.minJpy <= limitJpy);
-    });
-  }
-
-  function renderRow(site, kw, items) {
-    var st = rowState[site.id];
-    if (!st || st.kw !== kw) return;
-    var row = st.row;
-    var minEl = row.querySelector(".s-min");
-    var cntEl = row.querySelector(".s-count");
-    var detail = row.querySelector(".s-detail");
-    detail.innerHTML = "";
-
-    var parsed = items.map(function (it) { return { it: it, price: readPrice(it.priceRaw) }; });
-    if (site.sortClient) {
-      parsed.sort(function (a, b) { return (a.price ? a.price.jpy : 1e15) - (b.price ? b.price.jpy : 1e15); });
-    }
-    if (!parsed.length) {
-      minEl.className = "s-min na";
-      minEl.textContent = "該当なし";
-      cntEl.textContent = "";
-      st.minJpy = null;
-      refreshHitBadges();
-      appendOpenLink(detail, site, kw, null);
-      return;
-    }
-    var minP = null;
-    parsed.forEach(function (x) { if (x.price && (minP == null || x.price.jpy < minP)) minP = x.price.jpy; });
-    st.minJpy = minP;
-    minEl.className = "s-min";
-    minEl.textContent = minP != null ? "¥" + minP.toLocaleString() + "〜" : "-";
-    cntEl.textContent = parsed.length + "件";
-    refreshHitBadges();
-
-    var ul = document.createElement("ul");
-    ul.className = "d-items";
-    parsed.slice(0, MAX_ITEMS).forEach(function (x) {
-      var li = document.createElement("li");
-      var a = document.createElement("a");
-      a.href = relay(x.it.url);
-      if (x.it.img && /^https?:\/\//.test(x.it.img)) {
-        var im = document.createElement("img");
-        im.className = "th";
-        im.loading = "lazy";
-        im.referrerPolicy = "no-referrer";
-        im.alt = "";
-        im.addEventListener("error", function () { im.remove(); });
-        im.src = x.it.img;
-        a.appendChild(im);
-      }
-      var t = document.createElement("span");
-      t.className = "t";
-      t.textContent = x.it.title || "(タイトルなし)";
-      var p = document.createElement("span");
-      p.className = "p";
-      p.innerHTML = x.price ? x.price.label + (x.price.sub ? " <small>" + x.price.sub + "</small>" : "") : "-";
-      a.appendChild(t);
-      a.appendChild(p);
-      li.appendChild(a);
-      ul.appendChild(li);
-    });
-    detail.appendChild(ul);
-    appendOpenLink(detail, site, kw, null);
-  }
-
-  function appendOpenLink(detail, site, kw, retryFn) {
-    var foot = document.createElement("div");
-    foot.className = "d-foot";
-    if (retryFn) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = "🔄 再取得";
-      btn.addEventListener("click", retryFn);
-      foot.appendChild(btn);
-    }
-    var a = document.createElement("a");
-    a.textContent = "サイトで開く ↗";
-    a.href = relay(site.search(kw));
-    foot.appendChild(a);
-    detail.appendChild(foot);
-  }
-
-  function renderError(site, kw, msg) {
-    var st = rowState[site.id];
-    if (!st || st.kw !== kw) return;
-    var row = st.row;
-    var minEl = row.querySelector(".s-min");
-    minEl.className = "s-min err";
-    minEl.textContent = msg;
-    row.querySelector(".s-count").textContent = "";
-    st.minJpy = null;
-    refreshHitBadges();
-    var detail = row.querySelector(".s-detail");
-    detail.innerHTML = "";
-    appendOpenLink(detail, site, kw, function () { fetchSite(site, kw, true); });
-  }
-
-  function fetchSite(site, kw, force, attempt) {
-    attempt = attempt || 1;
-    var st = rowState[site.id];
-    if (st && st.kw === kw) {
-      var minEl = st.row.querySelector(".s-min");
-      minEl.className = "s-min";
-      minEl.innerHTML = '<span class="spin"></span>';
-    }
-    if (!force) {
-      var cached = cacheGet(site, kw);
-      if (cached) { renderRow(site, kw, cached); return Promise.resolve(); }
-    }
-    return jinaFetch(site.search(kw))
-      .then(function (text) {
-        var items = site.parse(text);
-        if (!items.length && /skeleton/i.test(text)) throw new Error("LOADING");
-        cacheSet(site, kw, items);
-        renderRow(site, kw, items);
-      })
-      .catch(function (e) {
-        var msg = String(e.message || e);
-        // 読み込み途中・時間切れは自動でもう1回だけ再試行
-        if (attempt < 2 && (msg === "LOADING" || /abort/i.test(msg))) {
-          return new Promise(function (res) { setTimeout(res, 2500); }).then(function () {
-            return fetchSite(site, kw, true, attempt + 1);
-          });
-        }
-        if (msg === "RATE") renderError(site, kw, "混雑中(1分後に再取得)");
-        else renderError(site, kw, "取得不可");
-      });
-  }
-
-  var running = 0;
-  function runSearch() {
-    var kw = kwInput.value.trim();
-    if (!kw) { kwInput.focus(); return; }
-    if (running) return;
-    kwInput.blur();
-    pushHistory(kw);
-    var btn = document.getElementById("searchBtn");
-    btn.disabled = true;
-    rowState = {};
-    buildSummary(kw);
-    running = 1;
-    Promise.all(SITES.map(function (site) { return fetchSite(site, kw); }))
-      .finally(function () { running = 0; btn.disabled = false; });
-  }
-
-  document.getElementById("searchBtn").addEventListener("click", runSearch);
-  kwInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") runSearch();
-  });
-
   updateLimit();
 })();
 </script>
