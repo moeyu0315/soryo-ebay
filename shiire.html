@@ -112,7 +112,7 @@
       url: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; }
     },
     {
-      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", icon: "🔨", color: "#dc2626",
+      id: "yahoo_active", group: "jp", name: "ヤフオク 出品中", icon: "🔨", color: "#dc2626", forceBrowser: true,
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
