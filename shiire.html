@@ -618,7 +618,7 @@ fetchRate();
   var SITES = [
     {
       id: "ebay", group: "ebay", name: "eBay 出品中", icon: "🌎", color: "#0064d2",
-      url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
+      url: function (kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15&ul_noapp=1"; } // ul_noapp=1: eBay公式のアプリ起動無効化。必ずブラウザで開く
     },
     {
       id: "terapeak", group: "ebay", name: "Terapeak", icon: "📊", color: "#e53238",
