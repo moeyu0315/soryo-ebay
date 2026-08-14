@@ -185,6 +185,10 @@
     var a = document.createElement("a");
     a.className = "site-btn";
     a.href = "#";
+    // 全サイトを「閲覧用の1タブ」を使い回して開く。
+    // ツールのタブは一切移動しないため、型番が消えることがない(タブも増えない)
+    a.target = "shiire_viewer";
+    a.rel = "opener";
     a.style.setProperty("--c", site.color);
     a.innerHTML = '<span class="icon"></span><span class="site-name"></span>';
     a.querySelector(".icon").textContent = site.icon;
