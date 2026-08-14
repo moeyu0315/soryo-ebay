@@ -2,177 +2,74 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2458d6">
-<title>仕入れ判断 一括検索ツール</title>
+<meta name="theme-color" content="#1d4d3e">
+<title>仕入れ判断 一括検索</title>
 </head>
 <body>
 
 <style>
-  :root {
-    --bg: #f2f4f8;
-    --card: #ffffff;
-    --ink: #1b2436;
-    --sub: #5c6b84;
-    --accent: #2458d6;
-    --accent-ink: #ffffff;
-    --border: #dfe5ee;
-    --input-bg: #ffffff;
-    --done: #0e7a4d;
-    --done-bg: #eef7f2;
-    --shadow: 0 1px 3px rgba(20, 34, 62, .07);
+  :root{
+    --bg:#ece4d0; --card:#fbf7ee; --line:#e3dcc8;
+    --txt:#26302a; --sub:#6f6b59; --accent:#1a7a5e;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0f141d;
-      --card: #18202e;
-      --ink: #e8ecf4;
-      --sub: #92a0b5;
-      --accent: #6a96ff;
-      --accent-ink: #0d1526;
-      --border: #2a3547;
-      --input-bg: #121a26;
-      --done: #4cc38a;
-      --done-bg: #14231c;
-      --shadow: 0 1px 3px rgba(0, 0, 0, .35);
-    }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    font-size:16px;line-height:1.5;min-height:100vh
   }
-  :root[data-theme="dark"] {
-    --bg: #0f141d;
-    --card: #18202e;
-    --ink: #e8ecf4;
-    --sub: #92a0b5;
-    --accent: #6a96ff;
-    --accent-ink: #0d1526;
-    --border: #2a3547;
-    --input-bg: #121a26;
-    --done: #4cc38a;
-    --done-bg: #14231c;
-    --shadow: 0 1px 3px rgba(0, 0, 0, .35);
-  }
+  header{background:linear-gradient(180deg,#1d4d3e,#163d31);color:#fff;padding:14px 16px}
+  header .hd{max-width:560px;margin:0 auto}
+  header h1{font-size:18px;font-weight:700}
+  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 14px 12px 40px;
-    -webkit-text-size-adjust: 100%;
+  .kw-wrap{position:relative;margin-bottom:14px}
+  #keyword{
+    width:100%;
+    font-size:16px; /* 16px未満だとiOSで自動ズームされる */
+    padding:15px 50px 15px 14px;
+    border:2px solid var(--line);
+    border-radius:12px;
+    outline:none;
+    background:var(--card);
+    color:var(--txt);
   }
-  .container { max-width: 560px; margin: 0 auto; }
-  h1 { font-size: 17px; margin-bottom: 10px; }
+  #keyword:focus{border-color:var(--accent)}
+  #clearKw{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    width:42px;height:42px;border:none;border-radius:50%;
+    background:transparent;color:var(--sub);font-size:18px;cursor:pointer
+  }
+  #clearKw:active{background:var(--line)}
 
-  .kw-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px;
-    box-shadow: var(--shadow);
-    margin-bottom: 12px;
-    position: sticky;
-    top: 8px;
-    z-index: 5;
+  .section{font-size:12px;font-weight:700;color:var(--sub);margin:16px 2px 8px;letter-spacing:.05em}
+  .site-list{display:flex;flex-direction:column;gap:9px}
+  a.site-btn{
+    display:flex;align-items:center;gap:12px;
+    min-height:60px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 1px 2px rgba(60,50,20,.05);
+    padding:10px 16px;
+    text-decoration:none;
+    color:var(--txt);
   }
-  .kw-wrap { position: relative; }
-  #clearKw {
-    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    width: 40px; height: 40px; border: none; border-radius: 50%;
-    background: transparent; color: var(--sub); font-size: 17px; cursor: pointer;
-  }
-  #clearKw:active { background: var(--border); }
-  #keyword {
-    width: 100%;
-    font-size: 16px; /* 16px未満だとiOSで自動ズームされる */
-    padding: 14px 48px 14px 14px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    outline: none;
-    background: var(--input-bg);
-    color: var(--ink);
-  }
-  #keyword:focus { border-color: var(--accent); }
-
-  .section {
-    font-size: 11px; font-weight: 700; color: var(--sub);
-    letter-spacing: .08em; margin: 14px 2px 6px;
-  }
-  .site-list { display: flex; flex-direction: column; gap: 8px; }
-  a.site-btn {
-    display: flex; align-items: center; gap: 10px;
-    min-height: 58px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 8px 14px;
-    text-decoration: none;
-    color: var(--ink);
-    -webkit-tap-highlight-color: transparent;
-  }
-  a.site-btn:active { background: var(--border); }
-  .check {
-    width: 26px; height: 26px; border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; color: transparent;
-  }
-  .site-info { flex: 1; min-width: 0; }
-  .site-name { font-size: 15px; font-weight: 700; }
-  .site-desc { font-size: 11px; color: var(--sub); margin-top: 1px; }
-  .arrow { color: var(--sub); font-size: 16px; flex-shrink: 0; }
-
-  a.site-btn.done { background: var(--done-bg); border-color: var(--done); }
-  a.site-btn.done .check { border-color: var(--done); background: var(--done); color: #fff; }
-  a.site-btn.done .site-name { color: var(--done); }
-
-  .reset-row { margin-top: 10px; text-align: center; }
-  #resetVisited {
-    font-size: 12px; color: var(--sub);
-    background: none; border: none; cursor: pointer;
-    padding: 8px 16px; text-decoration: underline;
-  }
-
-  details.calc {
-    margin-top: 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 13px;
-    color: var(--sub);
-  }
-  details.calc summary { cursor: pointer; font-weight: 700; -webkit-tap-highlight-color: transparent; }
-  .calc-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-  .calc-row label { font-size: 12px; white-space: nowrap; }
-  #sellPrice {
-    width: 90px; font-size: 16px; padding: 9px;
-    border: 2px solid var(--border); border-radius: 8px;
-    background: var(--input-bg); color: var(--ink); outline: none;
-  }
-  .limit-out { flex: 1; text-align: right; font-size: 12px; }
-  .limit-out b { display: block; font-size: 20px; color: var(--done); font-variant-numeric: tabular-nums; }
-  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-  .set-grid label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
-  .set-grid input {
-    font-size: 14px; padding: 8px;
-    border: 1px solid var(--border); border-radius: 8px;
-    background: var(--input-bg); color: var(--ink);
-  }
-
-  footer { margin-top: 18px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
+  a.site-btn:active{background:var(--line)}
+  .site-name{flex:1;font-size:16px;font-weight:700}
+  .site-desc{font-size:11.5px;color:var(--sub);font-weight:400;display:block;margin-top:1px}
+  .arrow{color:var(--accent);font-size:20px;font-weight:700}
 </style>
 
-<div class="container">
-  <h1>🔍 仕入れ判断 一括検索</h1>
+<header><div class="hd"><h1>🔍 仕入れ判断 一括検索</h1></div></header>
+<div class="wrap">
 
-  <div class="kw-card">
-    <div class="kw-wrap">
-      <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="done">
-      <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
-      <datalist id="history"></datalist>
-    </div>
+  <div class="kw-wrap">
+    <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="done">
+    <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
+    <datalist id="history"></datalist>
   </div>
 
   <div class="section">海外相場(eBay)</div>
@@ -181,43 +78,13 @@
   <div class="section">国内相場・仕入れ先</div>
   <div class="site-list" id="listJp"></div>
 
-  <div class="reset-row"><button id="resetVisited" type="button">✓をリセット</button></div>
-
-  <details class="calc">
-    <summary>💰 仕入れ上限計算(eBay売値から)</summary>
-    <div class="calc-row">
-      <label for="sellPrice">eBay売値 $</label>
-      <input type="number" id="sellPrice" inputmode="decimal" placeholder="80">
-      <div class="limit-out">仕入れ上限<b id="limitOut">-</b></div>
-    </div>
-    <div class="set-grid">
-      <label>eBay手数料+経費(%)<input type="number" id="setFee" inputmode="decimal"></label>
-      <label>国際送料(円)<input type="number" id="setShip" inputmode="numeric"></label>
-      <label>確保したい利益(円)<input type="number" id="setProfit" inputmode="numeric"></label>
-      <label>為替(円/$) 空欄=自動<input type="number" id="setRate" inputmode="decimal" placeholder="自動"></label>
-    </div>
-  </details>
-
-  <footer>
-    型番を入れてサイトをタップ → 確認したら「戻る」でこの画面へ。<br>
-    確認済みのサイトは緑の✓に変わります(型番を変えるとリセット)。
-  </footer>
 </div>
 
 <script>
 (function () {
   "use strict";
 
-  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
   var DAY_MS = 24 * 60 * 60 * 1000;
-
-  // 外部サイトを直接開くとiOSのユニバーサルリンクでアプリに飛ぶため、中継ページ経由で開く
-  function relay(url) { return GO_URL + "#" + encodeURIComponent(url); }
-
-  function loadJSON(key, fallback) {
-    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
-  }
-  function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
   var SITES = [
     {
@@ -259,13 +126,24 @@
     }
   ];
 
-  // ---- 検索窓・履歴 ----
   var STORAGE_HISTORY = "sourcing_tool_history";
   var STORAGE_LAST = "sourcing_tool_last_kw";
-  var STORAGE_VISITED = "sourcing_tool_visited"; // {kw, visited:{siteId:1}}
+  function loadJSON(key, fallback) {
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+  }
+  function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
   var kwInput = document.getElementById("keyword");
   if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
+  kwInput.addEventListener("input", function () { saveJSON(STORAGE_LAST, kwInput.value); });
+  kwInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") e.target.blur();
+  });
+  document.getElementById("clearKw").addEventListener("click", function () {
+    kwInput.value = "";
+    saveJSON(STORAGE_LAST, "");
+    kwInput.focus();
+  });
 
   function renderHistory() {
     var list = document.getElementById("history");
@@ -284,115 +162,21 @@
   }
   renderHistory();
 
-  // ---- 訪問済み管理(型番ごと) ----
-  function visitedState() {
-    var v = loadJSON(STORAGE_VISITED, { kw: "", visited: {} });
-    if (v.kw !== kwInput.value.trim()) return { kw: kwInput.value.trim(), visited: {} };
-    return v;
-  }
-  function markVisited(siteId) {
-    var v = visitedState();
-    v.visited[siteId] = 1;
-    saveJSON(STORAGE_VISITED, v);
-    refreshChecks();
-  }
-  function refreshChecks() {
-    var v = visitedState();
-    SITES.forEach(function (site) {
-      var el = document.getElementById("btn_" + site.id);
-      if (!el) return;
-      var done = !!v.visited[site.id];
-      el.classList.toggle("done", done);
-      el.querySelector(".check").textContent = done ? "✓" : "";
-    });
-  }
-
-  kwInput.addEventListener("input", function () {
-    saveJSON(STORAGE_LAST, kwInput.value);
-    refreshChecks(); // 型番が変わったら✓もリセット表示
-  });
-  kwInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") e.target.blur();
-  });
-  document.getElementById("clearKw").addEventListener("click", function () {
-    kwInput.value = "";
-    saveJSON(STORAGE_LAST, "");
-    refreshChecks();
-    kwInput.focus();
-  });
-  document.getElementById("resetVisited").addEventListener("click", function () {
-    saveJSON(STORAGE_VISITED, { kw: kwInput.value.trim(), visited: {} });
-    refreshChecks();
-  });
-
-  // ---- サイトボタン ----
   SITES.forEach(function (site) {
     var a = document.createElement("a");
     a.className = "site-btn";
-    a.id = "btn_" + site.id;
     a.href = "#";
-    a.innerHTML = '<span class="check"></span>' +
-      '<span class="site-info"><span class="site-name"></span><br><span class="site-desc"></span></span>' +
-      '<span class="arrow">›</span>';
-    a.querySelector(".site-name").textContent = site.name;
+    a.innerHTML = '<span class="site-name"><span class="nm"></span><span class="site-desc"></span></span><span class="arrow">›</span>';
+    a.querySelector(".nm").textContent = site.name;
     a.querySelector(".site-desc").textContent = site.desc;
     a.addEventListener("click", function (e) {
       var kw = kwInput.value.trim();
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
       pushHistory(kw);
-      markVisited(site.id);
-      a.href = relay(site.url(kw)); // タップ時点の型番・日付でURL確定、同じタブで開く
+      a.href = site.url(kw); // タップ時点の型番・日付でURL確定。直接開く(アプリがあればアプリ)
     });
     document.getElementById(site.group === "ebay" ? "listEbay" : "listJp").appendChild(a);
   });
-  refreshChecks();
-
-  // ---- 仕入れ上限計算(折りたたみ) ----
-  var autoRate = 155;
-  (function () {
-    var c = loadJSON("usd_jpy", null);
-    if (c && Date.now() - c.ts < 12 * 3600 * 1000) { autoRate = c.rate; return; }
-    fetch("https://api.frankfurter.app/latest?from=USD&to=JPY").then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.rates && d.rates.JPY) {
-        autoRate = d.rates.JPY;
-        saveJSON("usd_jpy", { ts: Date.now(), rate: autoRate });
-        updateLimit();
-      }
-    }).catch(function () {});
-  })();
-
-  var SET_KEY = "sourcing_calc_settings";
-  var settings = loadJSON(SET_KEY, { fee: 20, ship: 3000, profit: 3000, rate: "" });
-  function bindSetting(id, key) {
-    var el = document.getElementById(id);
-    el.value = settings[key];
-    el.addEventListener("input", function () {
-      settings[key] = el.value;
-      saveJSON(SET_KEY, settings);
-      updateLimit();
-    });
-  }
-  bindSetting("setFee", "fee");
-  bindSetting("setShip", "ship");
-  bindSetting("setProfit", "profit");
-  bindSetting("setRate", "rate");
-
-  var sellEl = document.getElementById("sellPrice");
-  sellEl.value = loadJSON("sourcing_sell_price", "");
-  sellEl.addEventListener("input", function () {
-    saveJSON("sourcing_sell_price", sellEl.value);
-    updateLimit();
-  });
-  function updateLimit() {
-    var out = document.getElementById("limitOut");
-    var sell = parseFloat(sellEl.value);
-    if (!sell || sell <= 0) { out.textContent = "-"; return; }
-    var rate = parseFloat(settings.rate) || autoRate;
-    var fee = (parseFloat(settings.fee) || 0) / 100;
-    var gross = sell * rate * (1 - fee) - (parseFloat(settings.ship) || 0) - (parseFloat(settings.profit) || 0);
-    out.textContent = "¥" + Math.max(0, Math.floor(gross / 100) * 100).toLocaleString();
-  }
-  updateLimit();
 })();
 </script>
 
