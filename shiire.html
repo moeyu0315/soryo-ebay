@@ -136,14 +136,31 @@
   function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
   var kwInput = document.getElementById("keyword");
-  if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
-  kwInput.addEventListener("input", function () { saveJSON(STORAGE_LAST, kwInput.value); });
+
+  // iPhoneのChromeは「戻る」でページを再読み込みして入力欄が空になるため、
+  // URLハッシュ + localStorage の両方に型番を保存し、表示のたびに復元する
+  function hashKw() {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (e) { return ""; }
+  }
+  function saveKw() {
+    saveJSON(STORAGE_LAST, kwInput.value);
+    try { history.replaceState(null, "", kwInput.value ? "#" + encodeURIComponent(kwInput.value) : location.pathname); } catch (e) {}
+  }
+  function restoreKw() {
+    if (!kwInput.value) kwInput.value = hashKw() || loadJSON(STORAGE_LAST, "");
+  }
+  restoreKw();
+  window.addEventListener("pageshow", restoreKw); // 「戻る」で帰ってきたときも復元
+  window.addEventListener("pagehide", saveKw);
+
+  kwInput.addEventListener("input", saveKw);
+  kwInput.addEventListener("change", saveKw);
   kwInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") e.target.blur();
   });
   document.getElementById("clearKw").addEventListener("click", function () {
     kwInput.value = "";
-    saveJSON(STORAGE_LAST, "");
+    saveKw();
     kwInput.focus();
   });
 
@@ -175,6 +192,7 @@
     a.addEventListener("click", function (e) {
       var kw = kwInput.value.trim();
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
+      saveKw(); // 開く直前に必ず保存(戻ったとき確実に復元するため)
       pushHistory(kw);
       a.href = site.url(kw); // タップ時点の型番・日付でURL確定。直接開く(アプリがあればアプリ)
     });
