@@ -20,6 +20,7 @@
     --input-bg: #ffffff;
     --row: #f7f9fc;
     --ok: #0e7a4d;
+    --ok-bg: #e3f4ec;
     --err: #b3261e;
     --shadow: 0 1px 3px rgba(20, 34, 62, .07);
   }
@@ -35,6 +36,7 @@
       --input-bg: #121a26;
       --row: #131b28;
       --ok: #4cc38a;
+      --ok-bg: #123123;
       --err: #ff8a80;
       --shadow: 0 1px 3px rgba(0, 0, 0, .35);
     }
@@ -50,6 +52,7 @@
     --input-bg: #121a26;
     --row: #131b28;
     --ok: #4cc38a;
+    --ok-bg: #123123;
     --err: #ff8a80;
     --shadow: 0 1px 3px rgba(0, 0, 0, .35);
   }
@@ -60,37 +63,27 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
-    padding: 16px 12px 40px;
+    padding: 14px 12px 40px;
     -webkit-text-size-adjust: 100%;
   }
   .container { max-width: 560px; margin: 0 auto; }
+  h1 { font-size: 17px; margin-bottom: 10px; }
 
-  h1 { font-size: 18px; letter-spacing: .01em; }
-  .subtitle { color: var(--sub); font-size: 12px; margin: 4px 0 12px; line-height: 1.6; }
-
-  .search-card {
+  .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 12px;
     box-shadow: var(--shadow);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-  .kw-wrap { position: relative; margin-bottom: 10px; }
+
+  .kw-wrap { position: relative; margin-bottom: 8px; }
   #clearKw {
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 38px; height: 38px;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: var(--sub);
-    font-size: 16px;
-    cursor: pointer;
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; border: none; border-radius: 50%;
+    background: transparent; color: var(--sub); font-size: 16px; cursor: pointer;
   }
-  #clearKw:active { background: var(--border); }
   #keyword {
     width: 100%;
     font-size: 16px; /* 16px未満だとiOSで自動ズームされる */
@@ -104,152 +97,153 @@
   #keyword:focus { border-color: var(--accent); }
   #searchBtn {
     width: 100%;
-    font-size: 16px;
-    font-weight: 700;
-    min-height: 50px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
+    font-size: 16px; font-weight: 700; min-height: 48px;
+    background: var(--accent); color: var(--accent-ink);
+    border: none; border-radius: 10px; cursor: pointer;
   }
   #searchBtn:active { transform: translateY(1px); opacity: .9; }
   #searchBtn:disabled { opacity: .55; }
 
-  .ebay-row { display: flex; gap: 8px; margin-top: 10px; }
-  .ebay-row a {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-    border: 1.5px solid var(--accent);
-    border-radius: 10px;
-    text-decoration: none;
-    padding: 4px 6px;
-    text-align: center;
+  /* 仕入れ上限計算 */
+  .calc-row { display: flex; align-items: center; gap: 8px; }
+  .calc-row label { font-size: 12px; color: var(--sub); white-space: nowrap; }
+  #sellPrice {
+    width: 90px; font-size: 16px; padding: 9px;
+    border: 2px solid var(--border); border-radius: 8px;
+    background: var(--input-bg); color: var(--ink); outline: none;
   }
-  .ebay-row a:active { background: var(--accent); color: var(--accent-ink); }
+  #sellPrice:focus { border-color: var(--accent); }
+  .limit-out { flex: 1; text-align: right; font-size: 12px; color: var(--sub); }
+  .limit-out b { display: block; font-size: 20px; color: var(--ok); font-variant-numeric: tabular-nums; }
+  details.calc-set { margin-top: 8px; font-size: 12px; color: var(--sub); }
+  details.calc-set summary { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .set-grid label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+  .set-grid input {
+    font-size: 14px; padding: 8px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--input-bg); color: var(--ink);
+  }
 
-  .r-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    margin-bottom: 10px;
-    overflow: hidden;
+  /* サマリー行 */
+  .s-row { border-top: 1px solid var(--border); }
+  .s-row:first-child { border-top: none; }
+  .s-main {
+    display: flex; align-items: center; gap: 6px;
+    width: 100%; min-height: 48px; padding: 6px 2px;
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; color: var(--ink); text-align: left;
+    -webkit-tap-highlight-color: transparent;
   }
-  .r-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
+  .s-name { font-size: 13.5px; font-weight: 700; width: 8.2em; flex-shrink: 0; }
+  .s-badge {
+    font-size: 9.5px; font-weight: 700; color: #fff; background: #b45309;
+    padding: 1px 6px; border-radius: 99px; flex-shrink: 0;
   }
-  .r-name { font-weight: 700; font-size: 14px; white-space: nowrap; }
-  .r-stat { flex: 1; font-size: 12px; color: var(--sub); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .r-stat .min { color: var(--ok); font-weight: 700; }
-  .r-stat.err { color: var(--err); }
-  .r-open {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-    text-decoration: none;
-    white-space: nowrap;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+  .s-hit {
+    font-size: 9.5px; font-weight: 700; color: var(--ok); background: var(--ok-bg);
+    padding: 1px 6px; border-radius: 99px; flex-shrink: 0;
   }
-  .r-open:active { background: var(--accent); color: var(--accent-ink); }
-  .r-items { list-style: none; border-top: 1px solid var(--border); }
-  .r-items li a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    text-decoration: none;
-    color: var(--ink);
+  .s-min { flex: 1; text-align: right; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+  .s-min.na { color: var(--sub); font-weight: 400; font-size: 12px; }
+  .s-min.err { color: var(--err); font-weight: 400; font-size: 12px; }
+  .s-count { font-size: 11px; color: var(--sub); width: 3.6em; text-align: right; flex-shrink: 0; }
+  .s-chev { color: var(--sub); font-size: 11px; flex-shrink: 0; width: 1em; text-align: center; transition: transform .15s; }
+  .s-row.open .s-chev { transform: rotate(180deg); }
+
+  .s-detail { display: none; padding-bottom: 8px; }
+  .s-row.open .s-detail { display: block; }
+  .d-items { list-style: none; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .d-items li a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; text-decoration: none; color: var(--ink);
   }
-  .r-items .th {
-    width: 52px;
-    height: 52px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: var(--border);
-    display: block;
+  .d-items li:nth-child(odd) a { background: var(--row); }
+  .d-items li a:active { background: var(--border); }
+  .d-items .th {
+    width: 48px; height: 48px; border-radius: 8px; object-fit: cover;
+    flex-shrink: 0; background: var(--border); display: block;
   }
-  .r-items li:nth-child(odd) a { background: var(--row); }
-  .r-items li a:active { background: var(--border); }
-  .r-items .t {
-    flex: 1;
-    font-size: 12.5px;
-    line-height: 1.45;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-width: 0;
+  .d-items .t {
+    flex: 1; font-size: 12px; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; min-width: 0;
   }
-  .r-items .p {
-    font-size: 14px;
-    font-weight: 700;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
+  .d-items .p { font-size: 13.5px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .d-items .p small { font-weight: 400; font-size: 10px; color: var(--sub); }
+  .d-foot { display: flex; gap: 8px; margin-top: 8px; }
+  .d-foot a, .d-foot button {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    min-height: 40px; font-size: 13px; font-weight: 700;
+    color: var(--accent); background: none;
+    border: 1.5px solid var(--accent); border-radius: 8px;
+    text-decoration: none; cursor: pointer; font-family: inherit;
   }
-  .r-items .p small { font-weight: 400; font-size: 10px; color: var(--sub); }
-  .r-foot { padding: 8px 12px; border-top: 1px solid var(--border); }
-  .r-retry {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-    background: none;
-    border: 1.5px solid var(--accent);
-    border-radius: 8px;
-    padding: 8px 16px;
-    cursor: pointer;
+  .d-foot a:active, .d-foot button:active { background: var(--accent); color: var(--accent-ink); }
+
+  .ebay-line { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 6px 2px; border-top: 1px solid var(--border); }
+  .ebay-line .s-name { font-size: 13.5px; }
+  .ebay-line a {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    min-height: 38px; font-size: 12.5px; font-weight: 700;
+    color: var(--accent); border: 1.5px solid var(--accent);
+    border-radius: 8px; text-decoration: none;
   }
+  .ebay-line a:active { background: var(--accent); color: var(--accent-ink); }
+
   .spin {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: sp 1s linear infinite;
-    vertical-align: -2px;
-    margin-right: 4px;
+    display: inline-block; width: 12px; height: 12px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: sp 1s linear infinite; vertical-align: -2px;
   }
   @keyframes sp { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
 
-  footer { margin-top: 20px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
+  footer { margin-top: 18px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.9; }
 </style>
 
 <div class="container">
-  <h1>🔍 仕入れ判断 一括検索ツール</h1>
-  <p class="subtitle">型番を入力して検索 → 各サイトの相場がここにまとめて表示されます</p>
+  <h1>🔍 仕入れ判断 一括検索</h1>
 
-  <div class="search-card">
+  <div class="card">
     <div class="kw-wrap">
-      <input type="text" id="keyword" placeholder="例:YAMAHA FL-10M" list="history" autocomplete="off" enterkeyhint="search">
+      <input type="text" id="keyword" placeholder="型番を入力(例:YAMAHA FL-10M)" list="history" autocomplete="off" enterkeyhint="search">
       <button id="clearKw" type="button" aria-label="入力を消す">✕</button>
       <datalist id="history"></datalist>
     </div>
     <button id="searchBtn">🔍 一括検索</button>
-    <div class="ebay-row">
-      <a id="ebayLink" href="#">eBay 出品中 ↗</a>
-      <a id="terapeakLink" href="#">Terapeak 販売履歴 ↗</a>
+  </div>
+
+  <div class="card">
+    <div class="calc-row">
+      <label for="sellPrice">eBay売値 $</label>
+      <input type="number" id="sellPrice" inputmode="decimal" placeholder="80">
+      <div class="limit-out">仕入れ上限<b id="limitOut">-</b></div>
+    </div>
+    <details class="calc-set">
+      <summary>⚙ 計算設定(手数料・送料・利益・為替)</summary>
+      <div class="set-grid">
+        <label>eBay手数料+経費(%)<input type="number" id="setFee" inputmode="decimal"></label>
+        <label>国際送料(円)<input type="number" id="setShip" inputmode="numeric"></label>
+        <label>確保したい利益(円)<input type="number" id="setProfit" inputmode="numeric"></label>
+        <label>為替(円/$) 空欄=自動<input type="number" id="setRate" inputmode="decimal" placeholder="自動"></label>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" id="summaryCard" hidden>
+    <div id="summary"></div>
+    <div class="ebay-line">
+      <span class="s-name">eBay</span>
+      <a id="ebayLink" href="#">出品中 ↗</a>
+      <a id="terapeakLink" href="#">Terapeak ↗</a>
     </div>
   </div>
 
-  <div id="results"></div>
-
   <footer>
-    国内6サイトの結果はツール内に表示されます(価格の安い順・上位のみ)。<br>
-    eBay/Terapeakはbot対策のため取得不可 → ボタンでサイトを開いてください。<br>
-    行をタップすると商品ページが開きます(戻るでこの画面に復帰)。
+    行をタップで商品リスト展開/もう一度タップで閉じる。<br>
+    商品タップで各サイトの商品ページ(戻るでこの画面に復帰)。<br>
+    「仕入圏内」=最安値が仕入れ上限以下のサイト。
   </footer>
 </div>
 
@@ -275,51 +269,89 @@
     var m = String(s == null ? "" : s).replace(/,/g, "").match(/[0-9]+(?:\.[0-9]+)?/);
     return m ? parseFloat(m[0]) : null;
   }
+  function loadJSON(key, fallback) {
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+  }
+  function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
-  // メルカリはJinaの取得サーバー(海外IP)経由だと米ドル表示になるため、円換算用レートを取得
-  var usdJpy = 155;
-  try {
-    var cachedRate = JSON.parse(localStorage.getItem("usd_jpy") || "null");
-    if (cachedRate && Date.now() - cachedRate.ts < 12 * 3600 * 1000) usdJpy = cachedRate.rate;
-    else fetch("https://api.frankfurter.app/latest?from=USD&to=JPY").then(function (r) { return r.json(); }).then(function (d) {
+  // ---- 為替レート(自動取得・12時間キャッシュ) ----
+  var autoRate = 155;
+  (function () {
+    var c = loadJSON("usd_jpy", null);
+    if (c && Date.now() - c.ts < 12 * 3600 * 1000) { autoRate = c.rate; return; }
+    fetch("https://api.frankfurter.app/latest?from=USD&to=JPY").then(function (r) { return r.json(); }).then(function (d) {
       if (d && d.rates && d.rates.JPY) {
-        usdJpy = d.rates.JPY;
-        localStorage.setItem("usd_jpy", JSON.stringify({ ts: Date.now(), rate: usdJpy }));
+        autoRate = d.rates.JPY;
+        saveJSON("usd_jpy", { ts: Date.now(), rate: autoRate });
+        updateLimit();
       }
     }).catch(function () {});
-  } catch (e) {}
+  })();
 
-  // 価格文字列 → {jpy:数値, label:表示}
   function readPrice(s) {
     if (!s) return null;
     var v = num(s);
     if (v == null) return null;
-    if (/[$]/.test(s)) return { jpy: Math.round(v * usdJpy), label: "約¥" + Math.round(v * usdJpy).toLocaleString(), sub: "$" + v };
+    if (/[$]/.test(s)) return { jpy: Math.round(v * autoRate), label: "約¥" + Math.round(v * autoRate).toLocaleString(), sub: "$" + v };
     return { jpy: v, label: "¥" + v.toLocaleString(), sub: null };
   }
 
+  // ---- 仕入れ上限計算 ----
+  var SET_KEY = "sourcing_calc_settings";
+  var settings = loadJSON(SET_KEY, { fee: 20, ship: 3000, profit: 3000, rate: "" });
+  var limitJpy = null;
+
+  function bindSetting(id, key) {
+    var el = document.getElementById(id);
+    el.value = settings[key];
+    el.addEventListener("input", function () {
+      settings[key] = el.value;
+      saveJSON(SET_KEY, settings);
+      updateLimit();
+    });
+  }
+  bindSetting("setFee", "fee");
+  bindSetting("setShip", "ship");
+  bindSetting("setProfit", "profit");
+  bindSetting("setRate", "rate");
+
+  var sellEl = document.getElementById("sellPrice");
+  sellEl.value = loadJSON("sourcing_sell_price", "");
+  sellEl.addEventListener("input", function () {
+    saveJSON("sourcing_sell_price", sellEl.value);
+    updateLimit();
+  });
+
+  function updateLimit() {
+    var out = document.getElementById("limitOut");
+    var sell = parseFloat(sellEl.value);
+    if (!sell || sell <= 0) { limitJpy = null; out.textContent = "-"; refreshHitBadges(); return; }
+    var rate = parseFloat(settings.rate) || autoRate;
+    var fee = (parseFloat(settings.fee) || 0) / 100;
+    var gross = sell * rate * (1 - fee) - (parseFloat(settings.ship) || 0) - (parseFloat(settings.profit) || 0);
+    limitJpy = Math.max(0, Math.floor(gross / 100) * 100); // 100円単位で切り捨て
+    out.textContent = "¥" + limitJpy.toLocaleString();
+    refreshHitBadges();
+  }
+
+  // ---- サイト定義(パーサーは実データで検証済み) ----
   var SITES = [
     {
-      id: "mercari", name: "メルカリ",
-      search: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; },
+      id: "yahoo_closed", name: "ヤフオク落札", badge: "実績",
+      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
       parse: function (text) {
-        var doc = toDoc(text);
-        var items = [];
-        doc.querySelectorAll('[data-testid="item-cell"]').forEach(function (cell) {
-          var a = cell.querySelector('a[href*="/item/"]');
-          if (!a) return;
-          var href = a.getAttribute("href");
-          var url = href.indexOf("http") === 0 ? href : "https://jp.mercari.com" + href;
-          var img = cell.querySelector("img");
-          var priceM = (cell.textContent || "").match(/[$¥￥][0-9.,]+|[0-9,]+円/);
-          var title = (img && img.alt) || (a.getAttribute("aria-label") || "").replace(/[$¥￥][0-9.,]+|[0-9,]+円/g, "") || cell.textContent;
-          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url, img: img ? img.src : null });
+        var d = parseNextData(text);
+        if (!d) return [];
+        var p = d.props || {};
+        var st = (p.pageProps && p.pageProps.initialState) || p.initialState || {};
+        var listing = st.search && st.search.items && st.search.items.listing;
+        return (listing ? listing.items || [] : []).map(function (it) {
+          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId, img: it.imageUrl || null };
         });
-        return items;
       }
     },
     {
-      id: "yahoo_active", name: "ヤフオク 出品中",
+      id: "yahoo_active", name: "ヤフオク出品中",
       search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/search/search?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
       parse: function (text) {
         var items = [];
@@ -334,17 +366,21 @@
       }
     },
     {
-      id: "yahoo_closed", name: "ヤフオク 落札相場",
-      search: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=30&s1=cbids&o1=a"; },
+      id: "mercari", name: "メルカリ",
+      search: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; },
       parse: function (text) {
-        var d = parseNextData(text);
-        if (!d) return [];
-        var p = d.props || {};
-        var st = (p.pageProps && p.pageProps.initialState) || p.initialState || {};
-        var listing = st.search && st.search.items && st.search.items.listing;
-        return (listing ? listing.items || [] : []).map(function (it) {
-          return { title: it.title, priceRaw: it.price != null ? it.price + "円" : null, url: "https://auctions.yahoo.co.jp/jp/auction/" + it.auctionId, img: it.imageUrl || null };
+        var items = [];
+        toDoc(text).querySelectorAll('[data-testid="item-cell"]').forEach(function (cell) {
+          var a = cell.querySelector('a[href*="/item/"]');
+          if (!a) return;
+          var href = a.getAttribute("href");
+          var url = href.indexOf("http") === 0 ? href : "https://jp.mercari.com" + href;
+          var img = cell.querySelector("img");
+          var priceM = (cell.textContent || "").match(/[$¥￥][0-9.,]+|[0-9,]+円/);
+          var title = (img && img.alt) || (a.getAttribute("aria-label") || "").replace(/[$¥￥][0-9.,]+|[0-9,]+円/g, "") || cell.textContent;
+          items.push({ title: title.trim(), priceRaw: priceM ? priceM[0] : null, url: url, img: img ? img.src : null });
         });
+        return items;
       }
     },
     {
@@ -360,7 +396,7 @@
       }
     },
     {
-      id: "fril", name: "楽天ラクマ",
+      id: "fril", name: "ラクマ",
       search: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; },
       parse: function (text) {
         var items = [];
@@ -368,8 +404,7 @@
           var a = b.querySelector("a.link_search_title") || b.querySelector(".item-box__item-name a");
           var pr = b.querySelector(".item-box__item-price");
           if (!a || !pr) return;
-          // ラクマの検索ページは画像が遅延読み込みで、取得時点ではダミー画像しか入っていない。
-          // 本物のURL(img.fril.jp等)が取れた場合のみ表示する
+          // ラクマの検索ページは画像が遅延読み込みで、本物のURLが取れた場合のみ表示
           var imSrc = null;
           b.querySelectorAll(".item-box__image-wrapper img").forEach(function (im) {
             [im.getAttribute("data-src"), im.getAttribute("data-original"), im.getAttribute("src")].forEach(function (s) {
@@ -383,8 +418,7 @@
       }
     },
     {
-      id: "hardoff", name: "ハードオフ",
-      sortClient: true, // ネットモールは価格順ソートのURLがないため取得後に並べ替える
+      id: "hardoff", name: "ハードオフ", sortClient: true,
       search: function (kw) { return "https://netmall.hardoff.co.jp/search/?q=" + encodeURIComponent(kw); },
       parse: function (text) {
         var seen = {};
@@ -410,14 +444,9 @@
     }
   ];
 
-  // ---- 検索窓まわり ----
+  // ---- 検索窓 ----
   var STORAGE_HISTORY = "sourcing_tool_history";
   var STORAGE_LAST = "sourcing_tool_last_kw";
-  function loadJSON(key, fallback) {
-    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
-  }
-  function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
-
   var kwInput = document.getElementById("keyword");
   if (!kwInput.value) kwInput.value = loadJSON(STORAGE_LAST, "");
   kwInput.addEventListener("input", function () { saveJSON(STORAGE_LAST, kwInput.value); });
@@ -426,7 +455,6 @@
     saveJSON(STORAGE_LAST, "");
     kwInput.focus();
   });
-
   function renderHistory() {
     var list = document.getElementById("history");
     list.innerHTML = "";
@@ -444,7 +472,7 @@
   }
   renderHistory();
 
-  // ---- eBay/Terapeakリンク(取得不可のためサイトを開く) ----
+  // ---- eBay/Terapeakリンク ----
   function ebayUrl(kw) { return "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(kw) + "&_sacat=0&_sop=15"; }
   function terapeakUrl(kw) {
     var end = Date.now(), start = end - 180 * DAY_MS;
@@ -462,9 +490,7 @@
     });
   });
 
-  // ---- 検索実行 ----
-  var running = 0;
-
+  // ---- 取得 ----
   function jinaFetch(url, timeoutMs) {
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 35000);
@@ -476,47 +502,88 @@
       })
       .finally(function () { clearTimeout(timer); });
   }
-
   function cacheGet(site, kw) {
-    var c = null;
-    try { c = JSON.parse(sessionStorage.getItem("jr2:" + site.id + ":" + kw) || "null"); } catch (e) {}
+    var c = loadCache("jr2:" + site.id + ":" + kw);
     return c && Date.now() - c.ts < CACHE_TTL ? c.items : null;
+  }
+  function loadCache(key) {
+    try { return JSON.parse(sessionStorage.getItem(key) || "null"); } catch (e) { return null; }
   }
   function cacheSet(site, kw, items) {
     try { sessionStorage.setItem("jr2:" + site.id + ":" + kw, JSON.stringify({ ts: Date.now(), items: items })); } catch (e) {}
   }
 
-  function makeCard(site) {
-    var card = document.createElement("section");
-    card.className = "r-card";
-    card.innerHTML =
-      '<div class="r-head">' +
-      '<span class="r-name"></span>' +
-      '<span class="r-stat"><span class="spin"></span>取得中…</span>' +
-      '<a class="r-open">サイトで開く</a>' +
-      "</div>";
-    card.querySelector(".r-name").textContent = site.name;
-    return card;
+  // ---- サマリー描画 ----
+  var rowState = {}; // siteId -> {row, items, kw}
+
+  function buildSummary(kw) {
+    var summary = document.getElementById("summary");
+    summary.innerHTML = "";
+    document.getElementById("summaryCard").hidden = false;
+    SITES.forEach(function (site) {
+      var row = document.createElement("div");
+      row.className = "s-row";
+      var main = document.createElement("button");
+      main.className = "s-main";
+      main.type = "button";
+      main.innerHTML = '<span class="s-name"></span>' +
+        (site.badge ? '<span class="s-badge">' + site.badge + "</span>" : "") +
+        '<span class="s-hit" hidden>仕入圏内</span>' +
+        '<span class="s-min"><span class="spin"></span></span>' +
+        '<span class="s-count"></span>' +
+        '<span class="s-chev">▼</span>';
+      main.querySelector(".s-name").textContent = site.name;
+      var detail = document.createElement("div");
+      detail.className = "s-detail";
+      row.appendChild(main);
+      row.appendChild(detail);
+      main.addEventListener("click", function () { row.classList.toggle("open"); });
+      summary.appendChild(row);
+      rowState[site.id] = { row: row, items: null, kw: kw, minJpy: null };
+    });
   }
 
-  function showItems(card, site, items) {
-    var stat = card.querySelector(".r-stat");
-    stat.classList.remove("err");
-    var old = card.querySelector(".r-items"); if (old) old.remove();
-    var foot = card.querySelector(".r-foot"); if (foot) foot.remove();
+  function refreshHitBadges() {
+    Object.keys(rowState).forEach(function (id) {
+      var st = rowState[id];
+      if (!st || !st.row) return;
+      var hit = st.row.querySelector(".s-hit");
+      if (hit) hit.hidden = !(limitJpy != null && st.minJpy != null && st.minJpy <= limitJpy);
+    });
+  }
+
+  function renderRow(site, kw, items) {
+    var st = rowState[site.id];
+    if (!st || st.kw !== kw) return;
+    var row = st.row;
+    var minEl = row.querySelector(".s-min");
+    var cntEl = row.querySelector(".s-count");
+    var detail = row.querySelector(".s-detail");
+    detail.innerHTML = "";
+
     var parsed = items.map(function (it) { return { it: it, price: readPrice(it.priceRaw) }; });
     if (site.sortClient) {
       parsed.sort(function (a, b) { return (a.price ? a.price.jpy : 1e15) - (b.price ? b.price.jpy : 1e15); });
     }
     if (!parsed.length) {
-      stat.innerHTML = "該当なし";
+      minEl.className = "s-min na";
+      minEl.textContent = "該当なし";
+      cntEl.textContent = "";
+      st.minJpy = null;
+      refreshHitBadges();
+      appendOpenLink(detail, site, kw, null);
       return;
     }
     var minP = null;
     parsed.forEach(function (x) { if (x.price && (minP == null || x.price.jpy < minP)) minP = x.price.jpy; });
-    stat.innerHTML = parsed.length + "件" + (minP != null ? ' / 最安 <span class="min">¥' + minP.toLocaleString() + "</span>" : "");
+    st.minJpy = minP;
+    minEl.className = "s-min";
+    minEl.textContent = minP != null ? "¥" + minP.toLocaleString() + "〜" : "-";
+    cntEl.textContent = parsed.length + "件";
+    refreshHitBadges();
+
     var ul = document.createElement("ul");
-    ul.className = "r-items";
+    ul.className = "d-items";
     parsed.slice(0, MAX_ITEMS).forEach(function (x) {
       var li = document.createElement("li");
       var a = document.createElement("a");
@@ -525,7 +592,7 @@
         var im = document.createElement("img");
         im.className = "th";
         im.loading = "lazy";
-        im.referrerPolicy = "no-referrer"; // 直リンク拒否対策
+        im.referrerPolicy = "no-referrer";
         im.alt = "";
         im.addEventListener("error", function () { im.remove(); });
         im.src = x.it.img;
@@ -542,50 +609,75 @@
       li.appendChild(a);
       ul.appendChild(li);
     });
-    card.appendChild(ul);
+    detail.appendChild(ul);
+    appendOpenLink(detail, site, kw, null);
   }
 
-  function showError(card, site, kw, msg) {
-    var stat = card.querySelector(".r-stat");
-    stat.classList.add("err");
-    stat.textContent = msg;
-    var old = card.querySelector(".r-foot"); if (old) old.remove();
+  function appendOpenLink(detail, site, kw, retryFn) {
     var foot = document.createElement("div");
-    foot.className = "r-foot";
-    var btn = document.createElement("button");
-    btn.className = "r-retry";
-    btn.textContent = "🔄 再取得";
-    btn.addEventListener("click", function () { fetchSite(card, site, kw, true); });
-    foot.appendChild(btn);
-    card.appendChild(foot);
+    foot.className = "d-foot";
+    if (retryFn) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "🔄 再取得";
+      btn.addEventListener("click", retryFn);
+      foot.appendChild(btn);
+    }
+    var a = document.createElement("a");
+    a.textContent = "サイトで開く ↗";
+    a.href = relay(site.search(kw));
+    foot.appendChild(a);
+    detail.appendChild(foot);
   }
 
-  function fetchSite(card, site, kw, force) {
-    var stat = card.querySelector(".r-stat");
-    stat.classList.remove("err");
-    stat.innerHTML = '<span class="spin"></span>取得中…';
-    var foot = card.querySelector(".r-foot"); if (foot) foot.remove();
+  function renderError(site, kw, msg) {
+    var st = rowState[site.id];
+    if (!st || st.kw !== kw) return;
+    var row = st.row;
+    var minEl = row.querySelector(".s-min");
+    minEl.className = "s-min err";
+    minEl.textContent = msg;
+    row.querySelector(".s-count").textContent = "";
+    st.minJpy = null;
+    refreshHitBadges();
+    var detail = row.querySelector(".s-detail");
+    detail.innerHTML = "";
+    appendOpenLink(detail, site, kw, function () { fetchSite(site, kw, true); });
+  }
 
+  function fetchSite(site, kw, force, attempt) {
+    attempt = attempt || 1;
+    var st = rowState[site.id];
+    if (st && st.kw === kw) {
+      var minEl = st.row.querySelector(".s-min");
+      minEl.className = "s-min";
+      minEl.innerHTML = '<span class="spin"></span>';
+    }
     if (!force) {
       var cached = cacheGet(site, kw);
-      if (cached) { showItems(card, site, cached); return Promise.resolve(); }
+      if (cached) { renderRow(site, kw, cached); return Promise.resolve(); }
     }
     return jinaFetch(site.search(kw))
       .then(function (text) {
         var items = site.parse(text);
         if (!items.length && /skeleton/i.test(text)) throw new Error("LOADING");
         cacheSet(site, kw, items);
-        showItems(card, site, items);
+        renderRow(site, kw, items);
       })
       .catch(function (e) {
         var msg = String(e.message || e);
-        if (msg === "RATE") showError(card, site, kw, "アクセス集中 — 1分ほど待って再取得");
-        else if (msg === "LOADING") showError(card, site, kw, "一覧を取得できず — 右の「サイトで開く」で確認");
-        else if (/abort/i.test(msg)) showError(card, site, kw, "時間切れ — 再取得してください");
-        else showError(card, site, kw, "取得できませんでした — 右の「サイトで開く」で確認");
+        // 読み込み途中・時間切れは自動でもう1回だけ再試行
+        if (attempt < 2 && (msg === "LOADING" || /abort/i.test(msg))) {
+          return new Promise(function (res) { setTimeout(res, 2500); }).then(function () {
+            return fetchSite(site, kw, true, attempt + 1);
+          });
+        }
+        if (msg === "RATE") renderError(site, kw, "混雑中(1分後に再取得)");
+        else renderError(site, kw, "取得不可");
       });
   }
 
+  var running = 0;
   function runSearch() {
     var kw = kwInput.value.trim();
     if (!kw) { kwInput.focus(); return; }
@@ -594,23 +686,19 @@
     pushHistory(kw);
     var btn = document.getElementById("searchBtn");
     btn.disabled = true;
-    var results = document.getElementById("results");
-    results.innerHTML = "";
-    var jobs = SITES.map(function (site) {
-      var card = makeCard(site);
-      var open = card.querySelector(".r-open");
-      open.href = relay(site.search(kw));
-      results.appendChild(card);
-      return fetchSite(card, site, kw);
-    });
+    rowState = {};
+    buildSummary(kw);
     running = 1;
-    Promise.all(jobs).finally(function () { running = 0; btn.disabled = false; });
+    Promise.all(SITES.map(function (site) { return fetchSite(site, kw); }))
+      .finally(function () { running = 0; btn.disabled = false; });
   }
 
   document.getElementById("searchBtn").addEventListener("click", runSearch);
   kwInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") runSearch();
   });
+
+  updateLimit();
 })();
 </script>
 
