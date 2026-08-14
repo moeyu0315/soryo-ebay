@@ -50,8 +50,9 @@
     m.httpEquiv = "refresh";
     m.content = "0;url=" + t;
     document.head.appendChild(m);
-    // 保険:メタリフレッシュが効かない環境ではタップの効力が切れた頃にJSで転送
-    setTimeout(function () { location.replace(t); }, 6000);
+    // メタリフレッシュが効かない環境(iOS Chrome等)向けに、即時JS転送も行う。
+    // このページは別タブとして開かれるため、JS転送でもアプリには飛ばない
+    setTimeout(function () { location.replace(t); }, 250);
   });
 })();
 </script>
