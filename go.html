@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>開いています…</title>
 <style>
-  body { font-family: sans-serif; background: #f2f4f8; color: #5c6b84; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-size: 15px; }
-  @media (prefers-color-scheme: dark) { body { background: #0f141d; color: #92a0b5; } }
+  body { font-family: sans-serif; background: #ece4d0; color: #6f6b59; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-size: 15px; }
 </style>
 </head>
 <body>
 <p id="msg">開いています…</p>
 <script>
-// 仕入れ判断検索ツール用の中継ページ。
-// リンクを直接タップするとiOSのユニバーサルリンクでアプリが起動してしまうため、
-// 一旦このページ(同一サイト内)を経由し、JSで転送することでブラウザ内で開けるようにする。
-// location.replaceで転送するため、このページは履歴に残らず「戻る」でツールに直接帰れる。
+// 仕入れ判断ツール用の中継ページ。
+// メルカリ・Yahoo!フリマ・ラクマは検索URLがユニバーサルリンク(アプリ横取り)の対象のため、
+// 一旦このページを経由し、JSで転送する。JSによる遷移はユーザーのタップ扱いにならず
+// ユニバーサルリンクを発動しないため、必ずブラウザで開く。
+// 転送は1回だけ(再転送タイマーは二重オープンの原因になるため置かない)。
 (function () {
   var ALLOWED = [
     "www.ebay.com",
@@ -36,22 +36,16 @@
     return null;
   }
 
-  // pageshowはbfcacheからの復帰時にも発火するので、どのケースでも必ず転送される。
-  // iOSはタップ後約5秒間、対応アプリが navigation を横取りする(ユニバーサルリンク)。
-  // 横取りされるとブラウザ側の遷移はキャンセルされ、このページに留まるため、
-  // 横取りが効かなくなる5.8秒後にもう一度転送して、必ずブラウザで開けるようにする。
-  window.addEventListener("pageshow", function () {
+  function go() {
     var t = targetUrl();
-    if (!t) {
+    if (t) {
+      location.replace(t);
+    } else {
       document.getElementById("msg").textContent = "無効なURLです。検索ツールから開き直してください。";
-      return;
     }
-    setTimeout(function () { location.replace(t); }, 250);
-    setTimeout(function () {
-      document.getElementById("msg").textContent = "ブラウザで開いています…そのまま数秒お待ちください";
-    }, 1500);
-    setTimeout(function () { location.replace(t); }, 5800);
-  });
+  }
+  window.addEventListener("pageshow", go);   // 通常表示・bfcache復帰
+  window.addEventListener("hashchange", go); // このページ滞在中に別の転送先が指定された場合
 })();
 </script>
 </body>

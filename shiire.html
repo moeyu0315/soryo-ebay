@@ -615,6 +615,12 @@ fetchRate();
 
   var DAY_MS = 24 * 60 * 60 * 1000;
 
+  // メルカリ・Yahoo!フリマ・ラクマは検索URLがアプリに横取りされる(AASA実測で確認)ため、
+  // 中継ページ(go.html)のJS転送でブラウザ表示を強制する。
+  // eBay/Terapeakはul_noapp=1、ヤフオク・ハードオフはそもそも横取り対象外なので直接開く。
+  var GO_URL = "https://moeyu0315.github.io/soryo-ebay/go.html";
+  function relay(url) { return GO_URL + "#" + encodeURIComponent(url); }
+
   var SITES = [
     {
       id: "ebay", group: "ebay", name: "eBay 出品中", icon: "🌎", color: "#0064d2",
@@ -631,7 +637,7 @@ fetchRate();
       }
     },
     {
-      id: "mercari", group: "jp", name: "メルカリ", icon: "🛍️", color: "#e64d8c",
+      id: "mercari", group: "jp", name: "メルカリ", icon: "🛍️", color: "#e64d8c", forceBrowser: true,
       url: function (kw) { return "https://jp.mercari.com/search?keyword=" + encodeURIComponent(kw) + "&status=on_sale&sort=price&order=asc"; }
     },
     {
@@ -643,11 +649,11 @@ fetchRate();
       url: function (kw) { var q = encodeURIComponent(kw); return "https://auctions.yahoo.co.jp/closedsearch/closedsearch?p=" + q + "&va=" + q + "&b=1&n=50&s1=cbids&o1=a"; }
     },
     {
-      id: "paypay", group: "jp", name: "Yahoo!フリマ", icon: "🛒", color: "#ff0033",
+      id: "paypay", group: "jp", name: "Yahoo!フリマ", icon: "🛒", color: "#ff0033", forceBrowser: true,
       url: function (kw) { return "https://paypayfleamarket.yahoo.co.jp/search/" + encodeURIComponent(kw) + "?sort=price&order=asc&itemStatus=open"; }
     },
     {
-      id: "fril", group: "jp", name: "楽天ラクマ", icon: "🎀", color: "#bf0000",
+      id: "fril", group: "jp", name: "楽天ラクマ", icon: "🎀", color: "#bf0000", forceBrowser: true,
       url: function (kw) { return "https://fril.jp/search/" + encodeURIComponent(kw) + "?transaction=selling&sort=sell_price&order=asc"; }
     },
     {
@@ -724,7 +730,8 @@ fetchRate();
       if (!kw) { e.preventDefault(); kwInput.focus(); return; }
       saveKw();
       pushHistory(kw);
-      a.href = site.url(kw); // タップ時点の型番・日付でURL確定。全サイト直接開く
+      var u = site.url(kw); // タップ時点の型番・日付でURL確定
+      a.href = site.forceBrowser ? relay(u) : u; // アプリ横取り対象サイトのみ中継でブラウザ強制
     });
     document.getElementById(site.group === "ebay" ? "listEbay" : "listJp").appendChild(a);
   });
